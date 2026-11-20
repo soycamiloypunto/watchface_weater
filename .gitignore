@@ -8,6 +8,7 @@ captures/
 local.properties
 keystore.properties
 keystore/
+docs/
 *.jks
 *.keystore
 *.pem
