@@ -22,7 +22,11 @@ android {
         minSdk = 34
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "0.0.1"
+    }
+
+    buildFeatures {
+        buildConfig = false
     }
 
     signingConfigs {
@@ -38,7 +42,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // Required for Watch Face Format: R8 strips unused R.class so the AAB has ZERO .dex files
+            isMinifyEnabled = true
             isShrinkResources = false
             if (keystorePropsFile.exists()) {
                 signingConfig = signingConfigs.getByName("release")
