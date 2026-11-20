@@ -1,13 +1,22 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
 }
 
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties()
+if (keystorePropsFile.exists()) {
+    keystoreProps.load(FileInputStream(keystorePropsFile))
+}
+
 android {
-    namespace = "com.weatherland.watchface"
+    namespace = "com.soycamiloypunto.weatherland"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.weatherland.watchface"
+        applicationId = "com.soycamiloypunto.weatherland"
         // WFF v2 (native Wear OS Weather data sources) requires Wear OS 5+ (API 34).
         // Supported on Galaxy Watch 4, 5, 6, 7, 8 & Ultra (One UI 6 Watch / Wear OS 5+).
         minSdk = 34
@@ -16,11 +25,24 @@ android {
         versionName = "1.0.0"
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropsFile.exists()) {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
             isShrinkResources = false
-            // Configure signingConfig here before uploading the .aab to Google Play
+            if (keystorePropsFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

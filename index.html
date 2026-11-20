@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weather Land — Realistic AMOLED Watch Face for Wear OS</title>
+<meta name="description" content="Weather Land: Realistic AMOLED live weather watch face for Wear OS 5+ (Galaxy Watch 4+). Native weather animations, lunar phases, and interactive preview." />
+<style>
+  :root {
+    --bg: #07090f;
+    --card: #101420;
+    --border: #1e2638;
+    --text: #eef2ff;
+    --muted: #94a3b8;
+    --accent: #3b82f6;
+  }
+  * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+  body {
+    margin: 0; background: radial-gradient(circle at top, #12182b 0%, var(--bg) 55%);
+    color: var(--text); line-height: 1.6;
+  }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 1080px; margin: 0 auto; padding: 18px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { font-weight: 800; font-size: 1.15rem; letter-spacing: 0.6px; color: #fff; text-decoration: none; }
+  nav { display: flex; gap: 18px; font-size: 0.92rem; }
+  nav a { color: var(--muted); text-decoration: none; transition: 0.15s; }
+  nav a:hover { color: #fff; }
+
+  main { max-width: 1080px; margin: 0 auto; padding: 36px 24px 72px; }
+  .hero {
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;
+  }
+  .hero h1 { margin: 0; font-size: clamp(1.9rem, 4vw, 2.75rem); font-weight: 800; letter-spacing: 0.4px; }
+  .hero p { margin: 0; max-width: 680px; color: var(--muted); font-size: 1.02rem; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .badge {
+    background: #141b2d; border: 1px solid #26324d; color: #cbd5e1;
+    padding: 5px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+  }
+
+  .simulator {
+    margin-top: 12px; display: flex; flex-direction: column; align-items: center; gap: 20px;
+  }
+  .watch-bezel {
+    width: min(486px, 92vw); height: min(486px, 92vw); border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #3a3f4b, #14171f 70%, #090a0e);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 28px 70px rgba(0,0,0,0.9), inset 0 2px 6px rgba(255,255,255,0.18);
+    border: 3px solid #2a2f3a; padding: 18px;
+  }
+  canvas {
+    width: 100%; height: 100%; border-radius: 50%; background: #000;
+    box-shadow: inset 0 0 24px rgba(255,255,255,0.06);
+  }
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 8px; max-width: 780px; justify-content: center;
+  }
+  button {
+    background: #151b2b; color: #e2e8f0; border: 1px solid #2c3852;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: 0.88rem; transition: 0.15s;
+  }
+  button:hover { background: #212c46; }
+  button.active { background: var(--accent); border-color: #60a5fa; color: #fff; font-weight: 600; }
+  .toggles {
+    display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+    font-size: 0.9rem; color: #cbd5e1; background: var(--card);
+    border: 1px solid var(--border); padding: 12px 20px; border-radius: 14px;
+  }
+  .toggles label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+  section { margin-top: 64px; }
+  h2 { font-size: 1.55rem; margin: 0 0 16px; color: #fff; }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 1.05rem; color: #fff; }
+  .card p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+
+  .gallery {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;
+  }
+  .gallery img {
+    width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; object-fit: cover;
+    border: 2px solid #232d42; background: #000;
+  }
+
+  .privacy-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; color: #cbd5e1; font-size: 0.95rem;
+  }
+  .privacy-box h3 { color: #fff; margin-top: 20px; margin-bottom: 6px; font-size: 1.05rem; }
+  .privacy-box a { color: #60a5fa; }
+
+  footer {
+    text-align: center; padding: 28px 24px; color: var(--muted);
+    font-size: 0.85rem; border-top: 1px solid var(--border);
+  }
+  footer a { color: #93c5fd; text-decoration: none; }
+</style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#">⌚ WEATHER LAND</a>
+    <nav>
+      <a href="#preview">Simulador</a>
+      <a href="#features">Características</a>
+      <a href="#gallery">Galería</a>
+      <a href="#privacy">Privacidad</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="preview" style="margin-top:0;">
+      <div class="badges">
+        <span class="badge">Wear OS 5+ (API 34+)</span>
+        <span class="badge">Watch Face Format v2</span>
+        <span class="badge">AMOLED True Black #000000</span>
+        <span class="badge">Galaxy Watch 4 / 5 / 6 / 7 / Ultra</span>
+      </div>
+      <h1>Weather Land</h1>
+      <p>
+        Carátula fotorrealista optimizada para pantallas AMOLED en Wear OS.
+        Clima en vivo nativo del sistema con sol con llamaradas, fases lunares reales,
+        nubes volumétricas, tormentas con rayos, lluvia sobre el cristal, nieve y niebla.
+      </p>
+
+      <div class="simulator">
+        <div class="watch-bezel">
+          <canvas id="watch" width="450" height="450"></canvas>
+        </div>
+        <div class="controls" id="modes"></div>
+        <div class="toggles">
+          <label><input type="checkbox" id="tTime" checked /> Hora</label>
+          <label><input type="checkbox" id="tDate" checked /> Fecha completa</label>
+          <label><input type="checkbox" id="tBatt" checked /> Batería</label>
+          <label><input type="checkbox" id="tTemp" checked /> Temperatura</label>
+          <label><input type="checkbox" id="tFog" checked /> Vidrio empañado</label>
+          <label><input type="checkbox" id="tAod" /> Modo AOD (Ambient)</label>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <h2>Características principales</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>☀️ Clima nativo sin API Keys</h3>
+          <p>Utiliza los proveedores nativos de Wear OS 5+ (<code>[WEATHER.*]</code>). Funciona al instante sin crear cuentas ni configurar llaves externas.</p>
+        </div>
+        <div class="card">
+          <h3>🖤 Fondo Negro Puro AMOLED</h3>
+          <p>Diseñada sobre <code>#000000</code> para resaltar el efecto realista sobre el cristal del reloj y maximizar el ahorro de batería OLED.</p>
+        </div>
+        <div class="card">
+          <h3>🌧️ Efectos sobre el cristal</h3>
+          <p>Lluvia en doble plano, gotas resbalando sobre el vidrio, condensación sutil que respira y relámpagos cayendo desde nubes de tormenta.</p>
+        </div>
+        <div class="card">
+          <h3>⚙️ 5 Ajustes desde el reloj</h3>
+          <p>Activa o desactiva Hora, Fecha completa, Batería, Temperatura y efecto de Vidrio Empañado directamente en la personalización del reloj.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery">
+      <h2>Capturas de pantalla (Wear OS)</h2>
+      <div class="gallery">
+        <img src="playstore_assets/01_soleado.png" alt="Soleado" loading="lazy" />
+        <img src="playstore_assets/02_seminublado_dia.png" alt="Seminublado" loading="lazy" />
+        <img src="playstore_assets/04_lluvia_empanado.png" alt="Lluvia y vidrio empañado" loading="lazy" />
+        <img src="playstore_assets/05_tormenta_rayos.png" alt="Tormenta con rayos" loading="lazy" />
+        <img src="playstore_assets/06_luna_llena.png" alt="Luna llena" loading="lazy" />
+        <img src="playstore_assets/07_nieve.png" alt="Nieve" loading="lazy" />
+      </div>
+    </section>
+
+    <section id="privacy">
+      <h2>Política de Privacidad / Privacy Policy</h2>
+      <div class="privacy-box">
+        <p><strong>Última actualización / Last updated:</strong> 20 de noviembre de 2026 — <strong>App:</strong> Weather Land (<code>com.soycamiloypunto.weatherland</code>)</p>
+        <p>También disponible en página dedicada para Google Play Console: <a href="privacy.html">privacy.html</a></p>
+
+        <h3>Español</h3>
+        <p>
+          <strong>Weather Land</strong> es una carátula para Wear OS desarrollada bajo el estándar oficial <em>Watch Face Format v2</em> sin código ejecutable.
+          Esta aplicación <strong>no recopila, no almacena, no procesa ni comparte ningún dato personal, ubicación ni información de uso</strong> con el desarrollador ni con terceros.
+          La información del clima, hora, fecha y porcentaje de batería se lee localmente desde los proveedores del sistema Wear OS únicamente para mostrarse en la pantalla del reloj.
+        </p>
+
+        <h3>English</h3>
+        <p>
+          <strong>Weather Land</strong> is a Wear OS watch face built with the official <em>Watch Face Format v2</em> (resource-only, no executable code).
+          This application <strong>does not collect, store, transmit, or share any personal data, location data, or analytics</strong> with the developer or any third party.
+          Weather conditions, temperature, time, date, and battery level are read strictly locally from native Wear OS system data sources solely to render the watch face on your device.
+        </p>
+
+        <h3>Contacto / Contact</h3>
+        <p>Desarrollador: <strong>soycamiloypunto</strong> — Repositorio: <a href="https://github.com/soycamiloypunto/watchface_weater" target="_blank" rel="noopener">github.com/soycamiloypunto/watchface_weater</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Weather Land — Wear OS Watch Face Format v2 · <a href="privacy.html">Política de Privacidad</a> · <a href="https://github.com/soycamiloypunto/watchface_weater" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+<script>
+const BASE = 'app/src/main/res/drawable/';
+const CACHE_VER = 'v2';
+const FILES = [
+  'sol', 'moon_full', 'moon_waxing', 'moon_waning',
+  'cloud_day', 'cloud_storm', 'cloud_trio', 'cloud_pair', 'cloud_storm_pair',
+  'lightning_left', 'lightning_center', 'lightning_double',
+  'fx_sun_corona', 'fx_sun_flares', 'fx_sun_glass_flare', 'fx_storm_flash',
+  'fx_rain_fast', 'fx_rain_slow', 'fx_glass_fog', 'fx_glass_drops_slide',
+  'fx_snow_slow', 'fx_snow_fast',
+  'fx_fog_descend', 'fx_fog_low_fast', 'fx_fog_low_fast_b',
+  'celestial_stars_a', 'celestial_stars_b'
+];
+const IMG = {};
+for (const name of FILES) {
+  const i = new Image();
+  i.src = BASE + name + '.png?' + CACHE_VER;
+  IMG[name] = i;
+}
+
+const MODES = [
+  { id: 'sunny',        label: '☀️ Soleado',          temp: 28 },
+  { id: 'partly_day',   label: '⛅ Seminublado Día',   temp: 24 },
+  { id: 'cloudy',       label: '☁️ Muy Nublado',       temp: 19 },
+  { id: 'rain',         label: '🌧️ Lluvia + Empañado', temp: 16 },
+  { id: 'storm',        label: '⛈️ Tormenta + Rayos',  temp: 15 },
+  { id: 'moon_full',    label: '🌕 Luna Llena',        temp: 14 },
+  { id: 'moon_waxing',  label: '🌓 Cuarto Creciente',  temp: 13 },
+  { id: 'moon_waning',  label: '🌗 Cuarto Menguante',  temp: 12 },
+  { id: 'partly_night', label: '☁️🌙 Noche Seminublada', temp: 13 },
+  { id: 'snow',         label: '❄️ Nieve',             temp: -1 },
+  { id: 'fog',          label: '🌫️ Niebla',            temp: 11 }
+];
+
+let mode = 'sunny';
+const modesEl = document.getElementById('modes');
+MODES.forEach(m => {
+  const b = document.createElement('button');
+  b.textContent = m.label;
+  if (m.id === mode) b.classList.add('active');
+  b.onclick = () => {
+    mode = m.id;
+    document.querySelectorAll('#modes button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+  };
+  modesEl.appendChild(b);
+});
+
+const canvas = document.getElementById('watch');
+const ctx = canvas.getContext('2d');
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+function drawImg(name, x, y, w, h, alpha = 1, angleDeg = 0, scale = 1) {
+  const img = IMG[name];
+  if (!img || !img.complete || img.naturalWidth === 0 || alpha <= 0.005) return;
+  ctx.save();
+  ctx.globalAlpha = clamp(alpha, 0, 1);
+  if (angleDeg !== 0 || scale !== 1) {
+    ctx.translate(x + w / 2, y + h / 2);
+    if (angleDeg) ctx.rotate(angleDeg * Math.PI / 180);
+    if (scale !== 1) ctx.scale(scale, scale);
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+  } else {
+    ctx.drawImage(img, x, y, w, h);
+  }
+  ctx.restore();
+}
+
+function render(nowMs) {
+  const t = nowMs / 1000;
+  const showTime = document.getElementById('tTime').checked;
+  const showDate = document.getElementById('tDate').checked;
+  const showBatt = document.getElementById('tBatt').checked;
+  const showTemp = document.getElementById('tTemp').checked;
+  const showFog  = document.getElementById('tFog').checked;
+  const isAod    = document.getElementById('tAod').checked;
+  const curMode  = MODES.find(m => m.id === mode);
+
+  ctx.clearRect(0, 0, 450, 450);
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, 450, 450);
+
+  if (!isAod) {
+    if (mode === 'sunny' || mode === 'partly_day') {
+      drawImg('fx_sun_corona', -35, -100, 520, 520, (190 + 55 * Math.sin(nowMs / 1400)) / 255, (nowMs / 220) % 360);
+      drawImg('fx_sun_flares', 45, -20, 360, 360, (160 + 80 * Math.sin(nowMs / 1300)) / 255, (nowMs / 260) % 360, 1 + 0.045 * Math.sin(nowMs / 1500));
+      drawImg('fx_sun_flares', 45, -20, 360, 360, (135 + 75 * Math.cos(nowMs / 1700)) / 255, 360 - ((nowMs / 340) % 360), 1 + 0.04 * Math.cos(nowMs / 1900));
+      drawImg('sol', 65, 0, 320, 320, 1, 0, 1 + 0.02 * Math.sin(nowMs / 1400));
+    }
+    if (mode === 'moon_full' || mode === 'moon_waxing' || mode === 'moon_waning' || mode === 'partly_night') {
+      drawImg('celestial_stars_a', 0, 0, 450, 450, (110 + 115 * Math.sin(nowMs / 1300)) / 255);
+      drawImg('celestial_stars_b', 0, 0, 450, 450, (110 + 115 * Math.cos(nowMs / 1700)) / 255);
+      const mImg = mode === 'partly_night' ? 'moon_full' : mode;
+      drawImg(mImg, 85, 10, 280, 280, 1);
+    }
+
+    if (mode === 'storm') {
+      const c = t % 12;
+      const flash = (c < 0.35) || (c > 4.0 && c < 4.40) || (c > 8.2 && c < 8.65);
+      if (flash) drawImg('fx_storm_flash', 0, 0, 450, 450, 180 / 255);
+      if (c < 0.18 || (c > 0.24 && c < 0.42)) {
+        drawImg('lightning_left', 0, clamp(-130 + c * 900, -130, 0), 450, 450, 1);
+      }
+      if ((c >= 4.0 && c < 4.18) || (c > 4.24 && c < 4.45)) {
+        drawImg('lightning_center', 0, clamp(-130 + (c - 4.0) * 900, -130, 0), 450, 450, 1);
+      }
+      if ((c >= 8.2 && c < 8.40) || (c > 8.48 && c < 8.72)) {
+        drawImg('lightning_double', 0, clamp(-130 + (c - 8.2) * 900, -130, 0), 450, 450, 1);
+      }
+    }
+
+    if (mode === 'partly_day' || mode === 'partly_night') {
+      drawImg('cloud_pair', -380 + ((t * 13.0) % 860), -25, 380, 380, 210 / 255);
+      drawImg('cloud_day',  -360 + (((t * 16.0) + 215) % 860), 10, 360, 360, 1);
+      drawImg('cloud_trio', -390 + (((t * 14.5) + 430) % 860), -5, 390, 390, 230 / 255);
+      drawImg('cloud_day',  -350 + (((t * 18.0) + 645) % 860), 25, 350, 350, 220 / 255);
+    } else if (mode === 'cloudy' || mode === 'snow') {
+      drawImg('cloud_storm_pair', -420 + ((t * 9.0) % 900), -55, 420, 420, 205 / 255);
+      drawImg('cloud_storm',      -400 + (((t * 11.0) + 150) % 900), -35, 400, 400, 215 / 255);
+      drawImg('cloud_trio',       -400 + (((t * 13.0) + 300) % 900), -20, 400, 400, 1);
+      drawImg('cloud_pair',       -390 + (((t * 14.5) + 450) % 900), 5, 390, 390, 235 / 255);
+      drawImg('cloud_day',        -380 + (((t * 16.0) + 600) % 900), -10, 380, 380, 1);
+      drawImg('cloud_trio',       -370 + (((t * 17.5) + 750) % 900), 25, 370, 370, 240 / 255);
+    } else if (mode === 'rain') {
+      drawImg('cloud_storm_pair', -420 + ((t * 11.0) % 900), -55, 420, 420, 1);
+      drawImg('cloud_storm',      -410 + (((t * 13.0) + 180) % 900), -35, 410, 410, 1);
+      drawImg('cloud_trio',       -400 + (((t * 15.0) + 360) % 900), -20, 400, 400, 215 / 255);
+      drawImg('cloud_storm_pair', -410 + (((t * 14.0) + 540) % 900), -40, 410, 410, 235 / 255);
+      drawImg('cloud_storm',      -390 + (((t * 16.5) + 720) % 900), -15, 390, 390, 220 / 255);
+    } else if (mode === 'storm') {
+      drawImg('cloud_storm',      -430 + ((t * 13.0) % 900), -75, 430, 430, 1);
+      drawImg('cloud_storm_pair', -430 + (((t * 13.0) + 180) % 900), -65, 430, 430, 1);
+      drawImg('cloud_storm',      -420 + (((t * 13.0) + 360) % 900), -55, 420, 420, 1);
+      drawImg('cloud_storm_pair', -430 + (((t * 13.0) + 540) % 900), -70, 430, 430, 1);
+      drawImg('cloud_storm',      -420 + (((t * 13.0) + 720) % 900), -50, 420, 420, 1);
+    }
+
+    if (mode === 'snow') {
+      drawImg('fx_snow_slow', 12 * Math.sin(nowMs / 1600), -450 + ((t * 42) % 450), 450, 900, 1);
+    }
+    if (mode === 'fog') {
+      drawImg('fx_fog_descend', 18 * Math.sin(nowMs / 2600), -450 + ((t * 34) % 450), 450, 900, (185 + 45 * Math.sin(nowMs / 2800)) / 255);
+    }
+  }
+
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const days = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+  const mons = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  const dateStr = `${days[now.getDay()]} ${mons[now.getMonth()]} ${String(now.getDate()).padStart(2, '0')}`;
+
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (showBatt) {
+    ctx.globalAlpha = isAod ? 0.5 : 1;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.beginPath();
+    ctx.roundRect(155, 18, 140, 28, 14);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 17px Segoe UI, sans-serif';
+    ctx.fillText('⚡ 87%', 225, 33);
+  }
+  if (showTime) {
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 82px Segoe UI, sans-serif';
+    ctx.fillText(`${hh}:${mm}`, 225, 294);
+  }
+  ctx.globalAlpha = isAod ? 0.45 : 0.68;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(72, 348, 306, 2);
+
+  if (showDate) {
+    ctx.globalAlpha = isAod ? 0.68 : 1;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 23px Segoe UI, sans-serif';
+    ctx.fillText(dateStr, 179, 378);
+  }
+  if (showTemp) {
+    ctx.globalAlpha = isAod ? 0.45 : 0.68;
+    ctx.fillRect(296, 354, 2, 42);
+    ctx.globalAlpha = isAod ? 0.68 : 1;
+    ctx.font = 'bold 25px Segoe UI, sans-serif';
+    ctx.fillText(`${curMode.temp}°`, 346, 378);
+  }
+  ctx.restore();
+
+  if (!isAod) {
+    if (mode === 'rain' || mode === 'storm') {
+      drawImg('fx_rain_slow', 0, -450 + ((t * 260) % 450), 450, 900, 1);
+      drawImg('fx_rain_fast', 0, -450 + ((t * 440) % 450), 450, 900, 1);
+      drawImg('fx_glass_drops_slide', 0, -450 + ((t * 22) % 450), 450, 900, 0.92);
+      if (showFog) {
+        drawImg('fx_glass_fog', 0, 0, 450, 450, (75 + 75 * Math.sin(nowMs / 3500)) / 255);
+      }
+    }
+    if (mode === 'snow') {
+      drawImg('fx_snow_fast', -14 * Math.sin(nowMs / 1200), -450 + ((t * 78) % 450), 450, 900, 1);
+    }
+    if (mode === 'fog') {
+      drawImg('fx_fog_low_fast',   -450 + ((t * 80) % 450),  195, 900, 260, (185 + 45 * Math.sin(nowMs / 2100)) / 255);
+      drawImg('fx_fog_low_fast_b', -450 + ((t * 125) % 450), 235, 900, 220, (195 + 50 * Math.cos(nowMs / 1700)) / 255);
+      if (showFog) {
+        drawImg('fx_glass_fog', 0, 0, 450, 450, (60 + 55 * Math.sin(nowMs / 3200)) / 255);
+      }
+    }
+    if (mode === 'sunny' || mode === 'partly_day') {
+      drawImg('fx_sun_glass_flare', 0, 0, 450, 450, (95 + 65 * Math.sin(nowMs / 1900)) / 255, 5 * Math.sin(nowMs / 3000));
+    }
+  }
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>

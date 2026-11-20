@@ -6,8 +6,11 @@ captures/
 
 # Local environment & signing keys (never commit secrets!)
 local.properties
+keystore.properties
+keystore/
 *.jks
 *.keystore
+*.pem
 
 # IDE files
 .idea/
