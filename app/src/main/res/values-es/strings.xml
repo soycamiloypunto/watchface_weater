@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Weather Land</string>
+
+    <string name="config_show_time">Mostrar hora</string>
+    <string name="config_show_date">Mostrar fecha completa</string>
+    <string name="config_show_battery">Mostrar batería</string>
+    <string name="config_show_temperature">Mostrar temperatura</string>
+    <string name="config_show_glass_fog">Efecto pantalla empañada en lluvia</string>
+</resources>

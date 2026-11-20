@@ -1,0 +1,20 @@
+# Gradle & Build outputs
+.gradle/
+build/
+app/build/
+captures/
+
+# Local environment & signing keys (never commit secrets!)
+local.properties
+*.jks
+*.keystore
+
+# IDE files
+.idea/
+*.iml
+.cxx/
+.externalNativeBuild/
+
+# OS files
+.DS_Store
+Thumbs.db

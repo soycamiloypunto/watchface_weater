@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WatchFaceInfo>
+    <Preview value="@drawable/preview" />
+    <Category value="CATEGORY_DIGITAL" />
+    <Editable value="true" />
+    <AvailableInRetail value="true" />
+</WatchFaceInfo>

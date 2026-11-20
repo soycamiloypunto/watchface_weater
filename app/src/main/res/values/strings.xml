@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Weather Land</string>
+
+    <string name="config_show_time">Show Time</string>
+    <string name="config_show_date">Show Full Date</string>
+    <string name="config_show_battery">Show Battery</string>
+    <string name="config_show_temperature">Show Temperature</string>
+    <string name="config_show_glass_fog">Rain Fogged Glass Effect</string>
+</resources>

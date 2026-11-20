@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Weather Land — Simulador AMOLED Wear OS (450×450)</title>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+  body {
+    margin: 0; min-height: 100vh; background: #0c0e14; color: #eef2ff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 24px;
+  }
+  h1 { margin: 0; font-size: 1.25rem; font-weight: 600; letter-spacing: 0.5px; color: #c7d2fe; }
+  .watch-bezel {
+    width: 486px; height: 486px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #3a3f4b, #14171f 70%, #090a0e);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.85), inset 0 2px 6px rgba(255,255,255,0.18);
+    border: 3px solid #2a2f3a;
+  }
+  canvas {
+    width: 450px; height: 450px; border-radius: 50%; background: #000;
+    box-shadow: inset 0 0 24px rgba(255,255,255,0.06);
+  }
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 8px; max-width: 720px; justify-content: center;
+  }
+  button {
+    background: #1b2030; color: #e2e8f0; border: 1px solid #334155;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: 0.88rem; transition: 0.15s;
+  }
+  button:hover { background: #27314a; }
+  button.active { background: #3b82f6; border-color: #60a5fa; color: #fff; font-weight: 600; }
+  .toggles { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.88rem; color: #cbd5e1; }
+  .toggles label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+</style>
+</head>
+<body>
+  <h1>Weather Land — Vista previa AMOLED (Galaxy Watch 4+)</h1>
+  <div class="watch-bezel">
+    <canvas id="watch" width="450" height="450"></canvas>
+  </div>
+  <div class="controls" id="modes"></div>
+  <div class="toggles">
+    <label><input type="checkbox" id="tTime" checked /> Hora</label>
+    <label><input type="checkbox" id="tDate" checked /> Fecha completa</label>
+    <label><input type="checkbox" id="tBatt" checked /> Batería</label>
+    <label><input type="checkbox" id="tTemp" checked /> Temperatura</label>
+    <label><input type="checkbox" id="tFog" checked /> Vidrio empañado</label>
+    <label><input type="checkbox" id="tAod" /> Modo AOD (Ambient)</label>
+  </div>
+
+<script>
+const BASE = 'app/src/main/res/drawable/';
+const CACHE_VER = 'v2';
+const FILES = [
+  'sol', 'moon_full', 'moon_waxing', 'moon_waning',
+  'cloud_day', 'cloud_storm', 'cloud_trio', 'cloud_pair', 'cloud_storm_pair',
+  'lightning_left', 'lightning_center', 'lightning_double',
+  'fx_sun_corona', 'fx_sun_flares', 'fx_sun_glass_flare', 'fx_storm_flash',
+  'fx_rain_fast', 'fx_rain_slow', 'fx_glass_fog', 'fx_glass_drops_slide',
+  'fx_snow_slow', 'fx_snow_fast',
+  'fx_fog_descend', 'fx_fog_low_fast', 'fx_fog_low_fast_b',
+  'celestial_stars_a', 'celestial_stars_b'
+];
+const IMG = {};
+for (const name of FILES) {
+  const i = new Image();
+  i.src = BASE + name + '.png?' + CACHE_VER;
+  IMG[name] = i;
+}
+
+const MODES = [
+  { id: 'sunny',        label: '☀️ Soleado',          temp: 28 },
+  { id: 'partly_day',   label: '⛅ Seminublado Día',   temp: 24 },
+  { id: 'cloudy',       label: '☁️ Muy Nublado',       temp: 19 },
+  { id: 'rain',         label: '🌧️ Lluvia + Empañado', temp: 16 },
+  { id: 'storm',        label: '⛈️ Tormenta + Rayos',  temp: 15 },
+  { id: 'moon_full',    label: '🌕 Luna Llena',        temp: 14 },
+  { id: 'moon_waxing',  label: '🌓 Cuarto Creciente',  temp: 13 },
+  { id: 'moon_waning',  label: '🌗 Cuarto Menguante',  temp: 12 },
+  { id: 'partly_night', label: '☁️🌙 Noche Seminublada', temp: 13 },
+  { id: 'snow',         label: '❄️ Nieve',             temp: -1 },
+  { id: 'fog',          label: '🌫️ Niebla',            temp: 11 }
+];
+
+let mode = 'sunny';
+const modesEl = document.getElementById('modes');
+MODES.forEach(m => {
+  const b = document.createElement('button');
+  b.textContent = m.label;
+  if (m.id === mode) b.classList.add('active');
+  b.onclick = () => {
+    mode = m.id;
+    document.querySelectorAll('#modes button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+  };
+  modesEl.appendChild(b);
+});
+
+const canvas = document.getElementById('watch');
+const ctx = canvas.getContext('2d');
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+function drawImg(name, x, y, w, h, alpha = 1, angleDeg = 0, scale = 1) {
+  const img = IMG[name];
+  if (!img || !img.complete || img.naturalWidth === 0 || alpha <= 0.005) return;
+  ctx.save();
+  ctx.globalAlpha = clamp(alpha, 0, 1);
+  if (angleDeg !== 0 || scale !== 1) {
+    ctx.translate(x + w / 2, y + h / 2);
+    if (angleDeg) ctx.rotate(angleDeg * Math.PI / 180);
+    if (scale !== 1) ctx.scale(scale, scale);
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+  } else {
+    ctx.drawImage(img, x, y, w, h);
+  }
+  ctx.restore();
+}
+
+function render(nowMs) {
+  const t = nowMs / 1000;
+  const showTime = document.getElementById('tTime').checked;
+  const showDate = document.getElementById('tDate').checked;
+  const showBatt = document.getElementById('tBatt').checked;
+  const showTemp = document.getElementById('tTemp').checked;
+  const showFog  = document.getElementById('tFog').checked;
+  const isAod    = document.getElementById('tAod').checked;
+  const curMode  = MODES.find(m => m.id === mode);
+
+  ctx.clearRect(0, 0, 450, 450);
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, 450, 450);
+
+  if (!isAod) {
+    // 1. ASTROS
+    if (mode === 'sunny' || mode === 'partly_day') {
+      drawImg('fx_sun_corona', -35, -100, 520, 520, (190 + 55 * Math.sin(nowMs / 1400)) / 255, (nowMs / 220) % 360);
+      drawImg('fx_sun_flares', 45, -20, 360, 360, (160 + 80 * Math.sin(nowMs / 1300)) / 255, (nowMs / 260) % 360, 1 + 0.045 * Math.sin(nowMs / 1500));
+      drawImg('fx_sun_flares', 45, -20, 360, 360, (135 + 75 * Math.cos(nowMs / 1700)) / 255, 360 - ((nowMs / 340) % 360), 1 + 0.04 * Math.cos(nowMs / 1900));
+      drawImg('sol', 65, 0, 320, 320, 1, 0, 1 + 0.02 * Math.sin(nowMs / 1400));
+    }
+    if (mode === 'moon_full' || mode === 'moon_waxing' || mode === 'moon_waning' || mode === 'partly_night') {
+      drawImg('celestial_stars_a', 0, 0, 450, 450, (110 + 115 * Math.sin(nowMs / 1300)) / 255);
+      drawImg('celestial_stars_b', 0, 0, 450, 450, (110 + 115 * Math.cos(nowMs / 1700)) / 255);
+      const mImg = mode === 'partly_night' ? 'moon_full' : mode;
+      drawImg(mImg, 85, 10, 280, 280, 1);
+    }
+
+    // 2. RELÁMPAGOS SLIDE-DOWN + FLASH (siempre debajo de la cobertura continua de tormenta)
+    if (mode === 'storm') {
+      const c = t % 12;
+      const flash = (c < 0.35) || (c > 4.0 && c < 4.40) || (c > 8.2 && c < 8.65);
+      if (flash) drawImg('fx_storm_flash', 0, 0, 450, 450, 180 / 255);
+
+      if (c < 0.18 || (c > 0.24 && c < 0.42)) {
+        drawImg('lightning_left', 0, clamp(-130 + c * 900, -130, 0), 450, 450, 1);
+      }
+      if ((c >= 4.0 && c < 4.18) || (c > 4.24 && c < 4.45)) {
+        drawImg('lightning_center', 0, clamp(-130 + (c - 4.0) * 900, -130, 0), 450, 450, 1);
+      }
+      if ((c >= 8.2 && c < 8.40) || (c > 8.48 && c < 8.72)) {
+        drawImg('lightning_double', 0, clamp(-130 + (c - 8.2) * 900, -130, 0), 450, 450, 1);
+      }
+    }
+
+    // 3. NUBES PASANDO DE IZQUIERDA A DERECHA EN MÚLTIPLES CAPAS
+    if (mode === 'partly_day' || mode === 'partly_night') {
+      drawImg('cloud_pair', -380 + ((t * 13.0) % 860), -25, 380, 380, 210 / 255);
+      drawImg('cloud_day',  -360 + (((t * 16.0) + 215) % 860), 10, 360, 360, 1);
+      drawImg('cloud_trio', -390 + (((t * 14.5) + 430) % 860), -5, 390, 390, 230 / 255);
+      drawImg('cloud_day',  -350 + (((t * 18.0) + 645) % 860), 25, 350, 350, 220 / 255);
+    } else if (mode === 'cloudy' || mode === 'snow') {
+      drawImg('cloud_storm_pair', -420 + ((t * 9.0) % 900), -55, 420, 420, 205 / 255);
+      drawImg('cloud_storm',      -400 + (((t * 11.0) + 150) % 900), -35, 400, 400, 215 / 255);
+      drawImg('cloud_trio',       -400 + (((t * 13.0) + 300) % 900), -20, 400, 400, 1);
+      drawImg('cloud_pair',       -390 + (((t * 14.5) + 450) % 900), 5, 390, 390, 235 / 255);
+      drawImg('cloud_day',        -380 + (((t * 16.0) + 600) % 900), -10, 380, 380, 1);
+      drawImg('cloud_trio',       -370 + (((t * 17.5) + 750) % 900), 25, 370, 370, 240 / 255);
+    } else if (mode === 'rain') {
+      drawImg('cloud_storm_pair', -420 + ((t * 11.0) % 900), -55, 420, 420, 1);
+      drawImg('cloud_storm',      -410 + (((t * 13.0) + 180) % 900), -35, 410, 410, 1);
+      drawImg('cloud_trio',       -400 + (((t * 15.0) + 360) % 900), -20, 400, 400, 215 / 255);
+      drawImg('cloud_storm_pair', -410 + (((t * 14.0) + 540) % 900), -40, 410, 410, 235 / 255);
+      drawImg('cloud_storm',      -390 + (((t * 16.5) + 720) % 900), -15, 390, 390, 220 / 255);
+    } else if (mode === 'storm') {
+      drawImg('cloud_storm',      -430 + ((t * 13.0) % 900), -75, 430, 430, 1);
+      drawImg('cloud_storm_pair', -430 + (((t * 13.0) + 180) % 900), -65, 430, 430, 1);
+      drawImg('cloud_storm',      -420 + (((t * 13.0) + 360) % 900), -55, 420, 420, 1);
+      drawImg('cloud_storm_pair', -430 + (((t * 13.0) + 540) % 900), -70, 430, 430, 1);
+      drawImg('cloud_storm',      -420 + (((t * 13.0) + 720) % 900), -50, 420, 420, 1);
+    }
+
+    // 4. NIEVE LEJANA / NIEBLA DESCENDENTE
+    if (mode === 'snow') {
+      drawImg('fx_snow_slow', 12 * Math.sin(nowMs / 1600), -450 + ((t * 42) % 450), 450, 900, 1);
+    }
+    if (mode === 'fog') {
+      drawImg('fx_fog_descend', 18 * Math.sin(nowMs / 2600), -450 + ((t * 34) % 450), 450, 900, (185 + 45 * Math.sin(nowMs / 2800)) / 255);
+    }
+  }
+
+  // 5. HUD (DEBAJO DEL CRISTAL EMPAÑADO, LLUVIA, NIEVE CERCANA Y NIEBLA BAJA)
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const days = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+  const mons = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  const dateStr = `${days[now.getDay()]} ${mons[now.getMonth()]} ${String(now.getDate()).padStart(2, '0')}`;
+
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (showBatt) {
+    ctx.globalAlpha = isAod ? 0.5 : 1;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.beginPath();
+    ctx.roundRect(155, 18, 140, 28, 14);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 17px Segoe UI, sans-serif';
+    ctx.fillText('⚡ 87%', 225, 33);
+  }
+  if (showTime) {
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 82px Segoe UI, sans-serif';
+    ctx.fillText(`${hh}:${mm}`, 225, 294);
+  }
+  ctx.globalAlpha = isAod ? 0.45 : 0.68;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(72, 348, 306, 2);
+
+  if (showDate) {
+    ctx.globalAlpha = isAod ? 0.68 : 1;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 23px Segoe UI, sans-serif';
+    ctx.fillText(dateStr, 179, 378);
+  }
+  if (showTemp) {
+    ctx.globalAlpha = isAod ? 0.45 : 0.68;
+    ctx.fillRect(296, 354, 2, 42);
+    ctx.globalAlpha = isAod ? 0.68 : 1;
+    ctx.font = 'bold 25px Segoe UI, sans-serif';
+    ctx.fillText(`${curMode.temp}°`, 346, 378);
+  }
+  ctx.restore();
+
+  // 6. SOBRE EL CRISTAL DEL RELOJ (POR ENCIMA DE LA HORA)
+  if (!isAod) {
+    if (mode === 'rain' || mode === 'storm') {
+      drawImg('fx_rain_slow', 0, -450 + ((t * 260) % 450), 450, 900, 1);
+      drawImg('fx_rain_fast', 0, -450 + ((t * 440) % 450), 450, 900, 1);
+      drawImg('fx_glass_drops_slide', 0, -450 + ((t * 22) % 450), 450, 900, 0.92);
+      if (showFog) {
+        drawImg('fx_glass_fog', 0, 0, 450, 450, (75 + 75 * Math.sin(nowMs / 3500)) / 255);
+      }
+    }
+    if (mode === 'snow') {
+      drawImg('fx_snow_fast', -14 * Math.sin(nowMs / 1200), -450 + ((t * 78) % 450), 450, 900, 1);
+    }
+    if (mode === 'fog') {
+      drawImg('fx_fog_low_fast',   -450 + ((t * 80) % 450),  195, 900, 260, (185 + 45 * Math.sin(nowMs / 2100)) / 255);
+      drawImg('fx_fog_low_fast_b', -450 + ((t * 125) % 450), 235, 900, 220, (195 + 50 * Math.cos(nowMs / 1700)) / 255);
+      if (showFog) {
+        drawImg('fx_glass_fog', 0, 0, 450, 450, (60 + 55 * Math.sin(nowMs / 3200)) / 255);
+      }
+    }
+    if (mode === 'sunny' || mode === 'partly_day') {
+      drawImg('fx_sun_glass_flare', 0, 0, 450, 450, (95 + 65 * Math.sin(nowMs / 1900)) / 255, 5 * Math.sin(nowMs / 3000));
+    }
+  }
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
