@@ -107,6 +107,31 @@
   .privacy-box h3 { color: #fff; margin-top: 20px; margin-bottom: 6px; font-size: 1.05rem; }
   .privacy-box a { color: #60a5fa; }
 
+  .beta-box {
+    width: 100%; max-width: 760px; margin-top: 6px;
+    background: linear-gradient(145deg, #11192e, #0c1222);
+    border: 1px solid #283a60; border-radius: 18px; padding: 20px 22px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+  }
+  .beta-box h2 { margin: 0; font-size: 1.15rem; color: #fff; }
+  .beta-box p { margin: 0; font-size: 0.88rem; color: #cbd5e1; max-width: 620px; }
+  .beta-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 999px; font-weight: 700; font-size: 0.92rem;
+    text-decoration: none; transition: 0.15s;
+  }
+  .cta-step1 {
+    background: #17233d; color: #e2e8f0; border: 1px solid #3b82f6;
+  }
+  .cta-step1:hover { background: #1e3156; color: #fff; transform: translateY(-1px); }
+  .cta-step2 {
+    background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff;
+    border: 1px solid #4ade80; box-shadow: 0 6px 20px rgba(34,197,94,0.32);
+  }
+  .cta-step2:hover { background: linear-gradient(135deg, #15803d, #16a34a); transform: translateY(-1px); }
+
   footer {
     text-align: center; padding: 28px 24px; color: var(--muted);
     font-size: 0.85rem; border-top: 1px solid var(--border);
@@ -123,7 +148,7 @@
       <a href="#gallery">Galería</a>
       <a href="#privacy">Privacidad</a>
       <a href="privacy.html">Privacy Policy</a>
-      <a class="btn-beta" href="https://play.google.com/apps/testing/com.soycamiloypunto.weatherland" target="_blank" rel="noopener">🚀 Unirse a Prueba Cerrada</a>
+      <a class="btn-beta" href="#beta-test">🚀 Descargar Beta</a>
     </nav>
   </header>
 
@@ -141,6 +166,22 @@
         Clima en vivo nativo del sistema con sol con llamaradas, fases lunares reales,
         nubes volumétricas, tormentas con rayos, lluvia sobre el cristal, nieve y niebla.
       </p>
+
+      <div class="beta-box" id="beta-test">
+        <h2>🧪 ¿Quieres probarla gratis en tu reloj Wear OS?</h2>
+        <p>
+          Inscríbete en la prueba cerrada en 2 pasos usando la misma cuenta de Google de tu reloj:
+          primero únete al grupo de testers y luego activa la descarga en Google Play.
+        </p>
+        <div class="beta-actions">
+          <a class="cta-btn cta-step1" href="https://groups.google.com/g/watchfaces-wearos" target="_blank" rel="noopener">
+            👥 1. Unirse al Grupo (watchfaces-wearos)
+          </a>
+          <a class="cta-btn cta-step2" href="https://play.google.com/apps/testing/com.soycamiloypunto.weatherland" target="_blank" rel="noopener">
+            📲 2. Inscribirse y Descargar en Play Store
+          </a>
+        </div>
+      </div>
 
       <div class="simulator">
         <div class="watch-bezel">
