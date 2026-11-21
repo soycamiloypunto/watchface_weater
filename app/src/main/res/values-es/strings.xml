@@ -2,9 +2,35 @@
 <resources>
     <string name="watch_face_name">Weather Land</string>
 
-    <string name="config_show_time">Mostrar hora</string>
-    <string name="config_show_date">Mostrar fecha completa</string>
-    <string name="config_show_battery">Mostrar batería</string>
-    <string name="config_show_temperature">Mostrar temperatura</string>
-    <string name="config_show_glass_fog">Efecto pantalla empañada en lluvia</string>
+    <!-- Formato, Fuente y Tamaño de Hora -->
+    <string name="config_time_style">Formato de Hora</string>
+    <string name="config_time_24h">Militar 24h (14:00)</string>
+    <string name="config_time_12h_short">Normal corta (02:00)</string>
+    <string name="config_time_12h_ampm">Normal larga (02:00 PM)</string>
+    <string name="config_time_text">En Texto (Mediodía / y cuarto)</string>
+    <string name="config_hidden">Oculta</string>
+
+    <string name="config_time_font">Fuente de Hora</string>
+    <string name="config_font_modern">Pixel (Moderna)</string>
+    <string name="config_font_digital">Nothing (Puntos)</string>
+    <string name="config_font_sport">Deportiva (Condensada)</string>
+    <string name="config_font_classic">Clásica (Serif)</string>
+
+    <string name="config_time_size">Tamaño de Hora</string>
+    <string name="config_size_normal">Normal (1x)</string>
+    <string name="config_size_large">Grande (1.35x)</string>
+    <string name="config_size_xl">Gigante (1.75x)</string>
+
+    <!-- Formato de Fecha -->
+    <string name="config_date_style">Formato de Fecha</string>
+    <string name="config_date_short">Corta (12/12/2026)</string>
+    <string name="config_date_medium">Media (12-DIC-26)</string>
+    <string name="config_date_long">Larga (12 Diciembre 2026)</string>
+
+    <!-- Interruptores y Complicación -->
+    <string name="config_show_battery_bar">Barra de Batería (3h–9h)</string>
+    <string name="config_show_steps">Pasos Caminados (12h–3h)</string>
+    <string name="config_show_temperature">Mostrar Temperatura</string>
+    <string name="config_show_glass_fog">Efecto Vidrio Empañado</string>
+    <string name="complication_calories">Calorías / Personalizable (9h–12h)</string>
 </resources>

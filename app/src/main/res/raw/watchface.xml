@@ -4,37 +4,69 @@
     Canvas: 450x450 circular | Fondo negro puro #000000 AMOLED.
     Clima nativo Wear OS [WEATHER.*] (cero configuración, sin OpenWeather API).
 
-    Capas en orden Z (de atrás hacia adelante):
-      1. Astros (Sol con corona volumétrica y llamaradas/ríos solares / Luna en 3 fases reales + estrellas alrededor)
-      2. Rayos eléctricos (slide-down siempre desde debajo de cobertura continua de nubes de tormenta + flash)
-      3. Nubes volumétricas pasando de izquierda a derecha en múltiples capas superpuestas
-      4. Nieve lejana / Niebla descendente / Viento
-      5. HUD (Batería, Hora, Fecha completa, Temperatura — todos configurables)
-      6. SOBRE EL VIDRIO (ENCIMA DE LA HORA):
-         - Lluvia realista en 2 planos sobre toda la pantalla
-         - Gotas limpias resbalando por el cristal
-         - Cristal empañado sutil que respira
-         - Nieve cercana cayendo suavemente sin saltos
-         - Niebla/humo rápido pasando por la parte baja
-         - Destello/reflejo solar en el cristal (Lens Flare)
+    Diferenciación Día / Noche ([WEATHER.IS_DAY]) en todos los estados:
+      - Sol con destellos ópticos (día) / 8 fases astronómicas de la Luna + estrellas (noche)
+      - Nubes blancas de día y nubes negras de noche en Seminublado, Nublado, Nieve, Niebla, Llovizna y Viento
+      - Llovizna de día (CONDITION == 12 + IS_DAY): prisma óptico arcoíris muy suave sobre el cristal
+      - Aguanieve (CONDITION == 10): copos de nieve reales + lluvia suave cayendo juntos
+      - Tormenta (CONDITION == 9): 5 capas de nubes negras + 3 rayos slide-down + flash + lluvia + empañado
 -->
 <WatchFace width="450" height="450" clipShape="CIRCLE">
 
     <UserConfigurations>
+        <ListConfiguration
+            id="time_style"
+            displayName="@string/config_time_style"
+            screenReaderText="@string/config_time_style"
+            defaultValue="h24">
+            <ListOption id="h24" displayName="@string/config_time_24h" />
+            <ListOption id="h12_short" displayName="@string/config_time_12h_short" />
+            <ListOption id="h12_ampm" displayName="@string/config_time_12h_ampm" />
+            <ListOption id="text_es" displayName="@string/config_time_text" />
+            <ListOption id="hidden" displayName="@string/config_hidden" />
+        </ListConfiguration>
+
+        <ListConfiguration
+            id="time_font"
+            displayName="@string/config_time_font"
+            screenReaderText="@string/config_time_font"
+            defaultValue="modern">
+            <ListOption id="modern" displayName="@string/config_font_modern" />
+            <ListOption id="classic" displayName="@string/config_font_classic" />
+            <ListOption id="sport" displayName="@string/config_font_sport" />
+            <ListOption id="digital" displayName="@string/config_font_digital" />
+        </ListConfiguration>
+
+        <ListConfiguration
+            id="time_size"
+            displayName="@string/config_time_size"
+            screenReaderText="@string/config_time_size"
+            defaultValue="normal">
+            <ListOption id="normal" displayName="@string/config_size_normal" />
+            <ListOption id="large" displayName="@string/config_size_large" />
+            <ListOption id="xl" displayName="@string/config_size_xl" />
+        </ListConfiguration>
+
+        <ListConfiguration
+            id="date_style"
+            displayName="@string/config_date_style"
+            screenReaderText="@string/config_date_style"
+            defaultValue="medium">
+            <ListOption id="short" displayName="@string/config_date_short" />
+            <ListOption id="medium" displayName="@string/config_date_medium" />
+            <ListOption id="long" displayName="@string/config_date_long" />
+            <ListOption id="hidden" displayName="@string/config_hidden" />
+        </ListConfiguration>
+
         <BooleanConfiguration
-            id="show_time"
-            displayName="@string/config_show_time"
-            screenReaderText="@string/config_show_time"
+            id="show_battery_bar"
+            displayName="@string/config_show_battery_bar"
+            screenReaderText="@string/config_show_battery_bar"
             defaultValue="TRUE" />
         <BooleanConfiguration
-            id="show_date"
-            displayName="@string/config_show_date"
-            screenReaderText="@string/config_show_date"
-            defaultValue="TRUE" />
-        <BooleanConfiguration
-            id="show_battery"
-            displayName="@string/config_show_battery"
-            screenReaderText="@string/config_show_battery"
+            id="show_steps"
+            displayName="@string/config_show_steps"
+            screenReaderText="@string/config_show_steps"
             defaultValue="TRUE" />
         <BooleanConfiguration
             id="show_temperature"
@@ -57,40 +89,42 @@
         <Group name="weather_background" x="0" y="0" width="450" height="450">
             <Variant mode="AMBIENT" target="alpha" value="0" />
 
-            <!-- 1. ASTROS: SOL REALISTA CON RAYOS LARGOS + RÍOS DE PLASMA / LUNA EN 3 FASES -->
+            <!-- 1. ASTROS: SOL CON DESTELLOS / SOL SUAVE EN LLOVIZNA / 8 FASES LUNARES -->
             <Condition>
                 <Expressions>
                     <Expression name="show_sun"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14)]]></Expression>
-                    <Expression name="show_moon_waxing"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 11.0)]]></Expression>
-                    <Expression name="show_moon_full"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 11.0) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 18.5)]]></Expression>
-                    <Expression name="show_moon_waning"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 18.5)]]></Expression>
+                    <Expression name="show_sun_drizzle"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && [WEATHER.CONDITION] == 12]]></Expression>
+                    <Expression name="moon_new"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && ((((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 1.85) || (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 27.68))]]></Expression>
+                    <Expression name="moon_waxing_crescent"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 1.85) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 5.54)]]></Expression>
+                    <Expression name="moon_first_quarter"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 5.54) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 9.23)]]></Expression>
+                    <Expression name="moon_waxing_gibbous"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 9.23) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 12.92)]]></Expression>
+                    <Expression name="moon_full"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 12.92) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 16.61)]]></Expression>
+                    <Expression name="moon_waning_gibbous"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 16.61) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 20.30)]]></Expression>
+                    <Expression name="moon_last_quarter"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 20.30) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 23.99)]]></Expression>
+                    <Expression name="moon_waning_crescent"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 23.99) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 27.68)]]></Expression>
                 </Expressions>
 
-                <!-- SOL REALISTA + RAYOS VOLUMÉTRICOS LARGOS + RÍOS DE PLASMA EN LA SUPERFICIE -->
+                <!-- SOL + DESTELLOS LIMPIOS -->
                 <Compare expression="show_sun">
-                    <!-- Corona y rayos largos orgánicos girando suavemente -->
                     <PartImage x="-35" y="-100" width="520" height="520" pivotX="0.5" pivotY="0.5">
-                        <Transform target="angle" value="([UTC_TIMESTAMP] / 220.0) % 360" />
-                        <Transform target="alpha" value="190 + 55 * sin([UTC_TIMESTAMP] / 1400.0)" />
+                        <Transform target="angle" value="([UTC_TIMESTAMP] / 260.0) % 360" />
+                        <Transform target="alpha" value="150 + 50 * sin([UTC_TIMESTAMP] / 1600.0)" />
                         <Image resource="fx_sun_corona" />
                     </PartImage>
-                    <!-- Ríos de plasma / prominencias solares capa A (levantándose en el borde) -->
-                    <PartImage x="45" y="-20" width="360" height="360" pivotX="0.5" pivotY="0.5">
-                        <Transform target="angle" value="([UTC_TIMESTAMP] / 260.0) % 360" />
-                        <Transform target="scaleX" value="1.0 + 0.045 * sin([UTC_TIMESTAMP] / 1500.0)" />
-                        <Transform target="scaleY" value="1.0 + 0.045 * sin([UTC_TIMESTAMP] / 1500.0)" />
-                        <Transform target="alpha" value="160 + 80 * sin([UTC_TIMESTAMP] / 1300.0)" />
-                        <Image resource="fx_sun_flares" />
+                    <PartImage x="-5" y="-70" width="460" height="460" pivotX="0.5" pivotY="0.5">
+                        <Transform target="angle" value="([UTC_TIMESTAMP] / 190.0) % 360" />
+                        <Transform target="scaleX" value="1.0 + 0.06 * sin([UTC_TIMESTAMP] / 1200.0)" />
+                        <Transform target="scaleY" value="1.0 + 0.06 * sin([UTC_TIMESTAMP] / 1200.0)" />
+                        <Transform target="alpha" value="125 + 110 * sin([UTC_TIMESTAMP] / 1100.0)" />
+                        <Image resource="fx_sun_shimmer_a" />
                     </PartImage>
-                    <!-- Ríos de plasma capa B (contra-rotación suave para movimiento orgánico vivo) -->
-                    <PartImage x="45" y="-20" width="360" height="360" pivotX="0.5" pivotY="0.5">
-                        <Transform target="angle" value="360 - (([UTC_TIMESTAMP] / 340.0) % 360)" />
-                        <Transform target="scaleX" value="1.0 + 0.04 * cos([UTC_TIMESTAMP] / 1900.0)" />
-                        <Transform target="scaleY" value="1.0 + 0.04 * cos([UTC_TIMESTAMP] / 1900.0)" />
-                        <Transform target="alpha" value="135 + 75 * cos([UTC_TIMESTAMP] / 1700.0)" />
-                        <Image resource="fx_sun_flares" />
+                    <PartImage x="-5" y="-70" width="460" height="460" pivotX="0.5" pivotY="0.5">
+                        <Transform target="angle" value="360 - (([UTC_TIMESTAMP] / 240.0) % 360)" />
+                        <Transform target="scaleX" value="1.0 + 0.05 * cos([UTC_TIMESTAMP] / 1450.0)" />
+                        <Transform target="scaleY" value="1.0 + 0.05 * cos([UTC_TIMESTAMP] / 1450.0)" />
+                        <Transform target="alpha" value="115 + 115 * cos([UTC_TIMESTAMP] / 1350.0)" />
+                        <Image resource="fx_sun_shimmer_b" />
                     </PartImage>
-                    <!-- Disco solar realista -->
                     <PartImage x="65" y="0" width="320" height="320" pivotX="0.5" pivotY="0.5">
                         <Transform target="scaleX" value="1.0 + 0.02 * sin([UTC_TIMESTAMP] / 1400.0)" />
                         <Transform target="scaleY" value="1.0 + 0.02 * sin([UTC_TIMESTAMP] / 1400.0)" />
@@ -98,80 +132,81 @@
                     </PartImage>
                 </Compare>
 
-                <!-- LUNA CUARTO CRECIENTE (estrellas en todo el cielo, nunca sobre la luna) -->
-                <Compare expression="show_moon_waxing">
-                    <PartImage x="0" y="0" width="450" height="450">
-                        <Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" />
-                        <Image resource="celestial_stars_a" />
+                <!-- SOL SUAVE ASOMÁNDOSE EN LLOVIZNA DE DÍA (JUSTIFICA EL PRISMA ARCOÍRIS) -->
+                <Compare expression="show_sun_drizzle">
+                    <PartImage x="-35" y="-100" width="520" height="520" pivotX="0.5" pivotY="0.5">
+                        <Transform target="alpha" value="95" />
+                        <Image resource="fx_sun_corona" />
                     </PartImage>
-                    <PartImage x="0" y="0" width="450" height="450">
-                        <Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" />
-                        <Image resource="celestial_stars_b" />
-                    </PartImage>
-                    <PartImage x="85" y="10" width="280" height="280">
-                        <Image resource="moon_waxing" />
+                    <PartImage x="75" y="10" width="300" height="300">
+                        <Transform target="alpha" value="170" />
+                        <Image resource="sol" />
                     </PartImage>
                 </Compare>
 
-                <!-- LUNA LLENA -->
-                <Compare expression="show_moon_full">
-                    <PartImage x="0" y="0" width="450" height="450">
-                        <Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" />
-                        <Image resource="celestial_stars_a" />
-                    </PartImage>
-                    <PartImage x="0" y="0" width="450" height="450">
-                        <Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" />
-                        <Image resource="celestial_stars_b" />
-                    </PartImage>
-                    <PartImage x="85" y="10" width="280" height="280">
-                        <Image resource="moon_full" />
-                    </PartImage>
+                <!-- 8 FASES REALES DE LA LUNA -->
+                <Compare expression="moon_new">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_new" /></PartImage>
                 </Compare>
-
-                <!-- LUNA CUARTO MENGUANTE -->
-                <Compare expression="show_moon_waning">
-                    <PartImage x="0" y="0" width="450" height="450">
-                        <Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" />
-                        <Image resource="celestial_stars_a" />
-                    </PartImage>
-                    <PartImage x="0" y="0" width="450" height="450">
-                        <Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" />
-                        <Image resource="celestial_stars_b" />
-                    </PartImage>
-                    <PartImage x="85" y="10" width="280" height="280">
-                        <Image resource="moon_waning" />
-                    </PartImage>
+                <Compare expression="moon_waxing_crescent">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_waxing_crescent" /></PartImage>
+                </Compare>
+                <Compare expression="moon_first_quarter">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_first_quarter" /></PartImage>
+                </Compare>
+                <Compare expression="moon_waxing_gibbous">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_waxing_gibbous" /></PartImage>
+                </Compare>
+                <Compare expression="moon_full">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_full" /></PartImage>
+                </Compare>
+                <Compare expression="moon_waning_gibbous">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_waning_gibbous" /></PartImage>
+                </Compare>
+                <Compare expression="moon_last_quarter">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_last_quarter" /></PartImage>
+                </Compare>
+                <Compare expression="moon_waning_crescent">
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * sin([UTC_TIMESTAMP] / 1300.0)" /><Image resource="celestial_stars_a" /></PartImage>
+                    <PartImage x="0" y="0" width="450" height="450"><Transform target="alpha" value="110 + 115 * cos([UTC_TIMESTAMP] / 1700.0)" /><Image resource="celestial_stars_b" /></PartImage>
+                    <PartImage x="85" y="10" width="280" height="280"><Image resource="moon_waning_crescent" /></PartImage>
                 </Compare>
             </Condition>
 
-            <!-- 2. RELÁMPAGOS EN SLIDE HACIA ABAJO + ILUMINACIÓN DE PANTALLA (TORMENTA)
-                 Siempre salen desde debajo de la cobertura continua de 5 nubes oscuras. -->
+            <!-- 2. RELÁMPAGOS EN SLIDE HACIA ABAJO + FLASH (TORMENTA) -->
             <Condition>
                 <Expressions>
                     <Expression name="is_storm"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.CONDITION] == 9]]></Expression>
                 </Expressions>
                 <Compare expression="is_storm">
-                    <!-- Flash eléctrico ambiental sincronizado con los 3 impactos del ciclo de 12 s -->
                     <PartImage x="0" y="0" width="450" height="450">
                         <Transform target="alpha" value="(((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 0.35) || (((([UTC_TIMESTAMP] / 1000.0) % 12.0) &gt; 4.0) &amp;&amp; ((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 4.40)) || (((([UTC_TIMESTAMP] / 1000.0) % 12.0) &gt; 8.2) &amp;&amp; ((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 8.65))) ? 180 : 0" />
                         <Image resource="fx_storm_flash" />
                     </PartImage>
-
-                    <!-- Rayo 1: Izquierda (0.0s - 0.42s, slide hacia abajo desde y=-130 hasta y=0) -->
                     <PartImage x="0" y="-130" width="450" height="450">
                         <Transform target="y" value="clamp(-130 + ((([UTC_TIMESTAMP] / 1000.0) % 12.0) * 900.0), -130, 0)" />
                         <Transform target="alpha" value="((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 0.18 || ((([UTC_TIMESTAMP] / 1000.0) % 12.0) &gt; 0.24 &amp;&amp; (([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 0.42)) ? 255 : 0" />
                         <Image resource="lightning_left" />
                     </PartImage>
-
-                    <!-- Rayo 2: Centro (4.0s - 4.45s, slide hacia abajo) -->
                     <PartImage x="0" y="-130" width="450" height="450">
                         <Transform target="y" value="clamp(-130 + (((([UTC_TIMESTAMP] / 1000.0) % 12.0) - 4.0) * 900.0), -130, 0)" />
                         <Transform target="alpha" value="((((([UTC_TIMESTAMP] / 1000.0) % 12.0) &gt;= 4.0) &amp;&amp; ((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 4.18)) || (((([UTC_TIMESTAMP] / 1000.0) % 12.0) &gt; 4.24) &amp;&amp; ((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 4.45))) ? 255 : 0" />
                         <Image resource="lightning_center" />
                     </PartImage>
-
-                    <!-- Rayo 3: Doble Izquierda-Derecha (8.2s - 8.72s, slide hacia abajo protagonista) -->
                     <PartImage x="0" y="-130" width="450" height="450">
                         <Transform target="y" value="clamp(-130 + (((([UTC_TIMESTAMP] / 1000.0) % 12.0) - 8.2) * 900.0), -130, 0)" />
                         <Transform target="alpha" value="((((([UTC_TIMESTAMP] / 1000.0) % 12.0) &gt;= 8.2) &amp;&amp; ((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 8.40)) || (((([UTC_TIMESTAMP] / 1000.0) % 12.0) &gt; 8.48) &amp;&amp; ((([UTC_TIMESTAMP] / 1000.0) % 12.0) &lt; 8.72))) ? 255 : 0" />
@@ -180,123 +215,289 @@
                 </Compare>
             </Condition>
 
-            <!-- 3. NUBES VOLUMÉTRICAS PASANDO DE IZQUIERDA A DERECHA (ANTEPUESTAS SEGÚN CLIMA) -->
+            <!-- 3. NUBES VOLUMÉTRICAS DIFERENCIADAS POR DÍA / NOCHE -->
             <Condition>
                 <Expressions>
-                    <Expression name="is_partly_cloudy"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15)]]></Expression>
-                    <Expression name="is_overcast"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 2 || [WEATHER.CONDITION] == 5 || [WEATHER.CONDITION] == 7 || [WEATHER.CONDITION] == 10 || [WEATHER.CONDITION] == 11)]]></Expression>
-                    <Expression name="is_rainy_clouds"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6 || [WEATHER.CONDITION] == 12)]]></Expression>
+                    <Expression name="is_partly_day"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && [WEATHER.CONDITION] == 14]]></Expression>
+                    <Expression name="is_partly_night"><![CDATA[[WEATHER.IS_AVAILABLE] && ![WEATHER.IS_DAY] && [WEATHER.CONDITION] == 14]]></Expression>
+                    <Expression name="is_overcast_day"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 2 || [WEATHER.CONDITION] == 5 || [WEATHER.CONDITION] == 7 || [WEATHER.CONDITION] == 10 || [WEATHER.CONDITION] == 11)]]></Expression>
+                    <Expression name="is_overcast_night"><![CDATA[[WEATHER.IS_AVAILABLE] && ![WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 2 || [WEATHER.CONDITION] == 5 || [WEATHER.CONDITION] == 7 || [WEATHER.CONDITION] == 10 || [WEATHER.CONDITION] == 11)]]></Expression>
+                    <Expression name="is_drizzle_day"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && [WEATHER.CONDITION] == 12]]></Expression>
+                    <Expression name="is_drizzle_night"><![CDATA[[WEATHER.IS_AVAILABLE] && ![WEATHER.IS_DAY] && [WEATHER.CONDITION] == 12]]></Expression>
+                    <Expression name="is_rain_day"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6)]]></Expression>
+                    <Expression name="is_rain_night"><![CDATA[[WEATHER.IS_AVAILABLE] && ![WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6)]]></Expression>
                     <Expression name="is_storm_clouds"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.CONDITION] == 9]]></Expression>
+                    <Expression name="is_fog_day_clouds"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 3 || [WEATHER.CONDITION] == 13)]]></Expression>
+                    <Expression name="is_fog_night_clouds"><![CDATA[[WEATHER.IS_AVAILABLE] && ![WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 3 || [WEATHER.CONDITION] == 13)]]></Expression>
+                    <Expression name="is_wind_day_clouds"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && [WEATHER.CONDITION] == 15]]></Expression>
+                    <Expression name="is_wind_night_clouds"><![CDATA[[WEATHER.IS_AVAILABLE] && ![WEATHER.IS_DAY] && [WEATHER.CONDITION] == 15]]></Expression>
                 </Expressions>
 
-                <!-- SEMINUBLADO: 4 nubes pasando continuamente una detrás de otra y superpuestas -->
-                <Compare expression="is_partly_cloudy">
-                    <PartImage x="-380" y="-25" width="380" height="380">
-                        <Transform target="x" value="-380 + ((([UTC_TIMESTAMP] / 1000.0) * 13.0) % 860)" />
-                        <Transform target="alpha" value="210" />
-                        <Image resource="cloud_pair" />
+                <!-- SEMINUBLADO DÍA: nubes blancas espaciadas -->
+                <Compare expression="is_partly_day">
+                    <PartImage x="-360" y="10" width="330" height="330">
+                        <Transform target="x" value="-360 + ((([UTC_TIMESTAMP] / 1000.0) * 14.0) % 1180)" />
+                        <Image resource="cloud_white_1" />
                     </PartImage>
-                    <PartImage x="-360" y="10" width="360" height="360">
-                        <Transform target="x" value="-360 + (((([UTC_TIMESTAMP] / 1000.0) * 16.0) + 215) % 860)" />
-                        <Image resource="cloud_day" />
-                    </PartImage>
-                    <PartImage x="-390" y="-5" width="390" height="390">
-                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 14.5) + 430) % 860)" />
+                    <PartImage x="-380" y="-15" width="360" height="360">
+                        <Transform target="x" value="-380 + (((([UTC_TIMESTAMP] / 1000.0) * 14.0) + 590) % 1180)" />
                         <Transform target="alpha" value="230" />
-                        <Image resource="cloud_trio" />
-                    </PartImage>
-                    <PartImage x="-350" y="25" width="350" height="350">
-                        <Transform target="x" value="-350 + (((([UTC_TIMESTAMP] / 1000.0) * 18.0) + 645) % 860)" />
-                        <Transform target="alpha" value="220" />
-                        <Image resource="cloud_day" />
+                        <Image resource="cloud_white_2_sep" />
                     </PartImage>
                 </Compare>
 
-                <!-- MUY NUBLADO / NIEVE: 6 capas densas mezclando nubes oscuras y blancas -->
-                <Compare expression="is_overcast">
-                    <PartImage x="-420" y="-55" width="420" height="420">
-                        <Transform target="x" value="-420 + ((([UTC_TIMESTAMP] / 1000.0) * 9.0) % 900)" />
-                        <Transform target="alpha" value="205" />
-                        <Image resource="cloud_storm_pair" />
+                <!-- SEMINUBLADO NOCHE: nubes negras pasando frente a la Luna -->
+                <Compare expression="is_partly_night">
+                    <PartImage x="-360" y="10" width="330" height="330">
+                        <Transform target="x" value="-360 + ((([UTC_TIMESTAMP] / 1000.0) * 14.0) % 1180)" />
+                        <Image resource="cloud_dark_1" />
                     </PartImage>
-                    <PartImage x="-400" y="-35" width="400" height="400">
-                        <Transform target="x" value="-400 + (((([UTC_TIMESTAMP] / 1000.0) * 11.0) + 150) % 900)" />
-                        <Transform target="alpha" value="215" />
-                        <Image resource="cloud_storm" />
+                    <PartImage x="-380" y="-15" width="360" height="360">
+                        <Transform target="x" value="-380 + (((([UTC_TIMESTAMP] / 1000.0) * 14.0) + 590) % 1180)" />
+                        <Transform target="alpha" value="230" />
+                        <Image resource="cloud_dark_2_sep" />
                     </PartImage>
-                    <PartImage x="-400" y="-20" width="400" height="400">
-                        <Transform target="x" value="-400 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 300) % 900)" />
-                        <Image resource="cloud_trio" />
+                </Compare>
+
+                <!-- MUY NUBLADO / NIEVE / AGUANIEVE DÍA: 5 capas de nubes blancas variadas -->
+                <Compare expression="is_overcast_day">
+                    <PartImage x="-400" y="-35" width="380" height="380">
+                        <Transform target="x" value="-400 + ((([UTC_TIMESTAMP] / 1000.0) * 12.5) % 1050)" />
+                        <Image resource="cloud_white_3" />
                     </PartImage>
-                    <PartImage x="-390" y="5" width="390" height="390">
-                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 14.5) + 450) % 900)" />
+                    <PartImage x="-390" y="-45" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 210) % 1050)" />
+                        <Transform target="alpha" value="225" />
+                        <Image resource="cloud_white_1" />
+                    </PartImage>
+                    <PartImage x="-400" y="-15" width="380" height="380">
+                        <Transform target="x" value="-400 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 420) % 1050)" />
                         <Transform target="alpha" value="235" />
-                        <Image resource="cloud_pair" />
+                        <Image resource="cloud_white_2_stack" />
                     </PartImage>
-                    <PartImage x="-380" y="-10" width="380" height="380">
-                        <Transform target="x" value="-380 + (((([UTC_TIMESTAMP] / 1000.0) * 16.0) + 600) % 900)" />
-                        <Image resource="cloud_day" />
+                    <PartImage x="-390" y="-30" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 630) % 1050)" />
+                        <Transform target="alpha" value="220" />
+                        <Image resource="cloud_white_2_sep" />
                     </PartImage>
-                    <PartImage x="-370" y="25" width="370" height="370">
-                        <Transform target="x" value="-370 + (((([UTC_TIMESTAMP] / 1000.0) * 17.5) + 750) % 900)" />
+                    <PartImage x="-390" y="5" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 840) % 1050)" />
                         <Transform target="alpha" value="240" />
-                        <Image resource="cloud_trio" />
+                        <Image resource="cloud_white_1" />
                     </PartImage>
                 </Compare>
 
-                <!-- LLUVIA: 5 capas continuas de nubes densas (oscuras + grises) -->
-                <Compare expression="is_rainy_clouds">
-                    <PartImage x="-420" y="-55" width="420" height="420">
-                        <Transform target="x" value="-420 + ((([UTC_TIMESTAMP] / 1000.0) * 11.0) % 900)" />
-                        <Image resource="cloud_storm_pair" />
+                <!-- MUY NUBLADO / NIEVE / AGUANIEVE NOCHE: 5 capas de nubes negras -->
+                <Compare expression="is_overcast_night">
+                    <PartImage x="-400" y="-35" width="380" height="380">
+                        <Transform target="x" value="-400 + ((([UTC_TIMESTAMP] / 1000.0) * 12.5) % 1050)" />
+                        <Image resource="cloud_dark_2_stack" />
                     </PartImage>
-                    <PartImage x="-410" y="-35" width="410" height="410">
-                        <Transform target="x" value="-410 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 180) % 900)" />
-                        <Image resource="cloud_storm" />
+                    <PartImage x="-390" y="-45" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 210) % 1050)" />
+                        <Transform target="alpha" value="225" />
+                        <Image resource="cloud_dark_1" />
                     </PartImage>
-                    <PartImage x="-400" y="-20" width="400" height="400">
-                        <Transform target="x" value="-400 + (((([UTC_TIMESTAMP] / 1000.0) * 15.0) + 360) % 900)" />
-                        <Transform target="alpha" value="215" />
-                        <Image resource="cloud_trio" />
-                    </PartImage>
-                    <PartImage x="-410" y="-40" width="410" height="410">
-                        <Transform target="x" value="-410 + (((([UTC_TIMESTAMP] / 1000.0) * 14.0) + 540) % 900)" />
+                    <PartImage x="-400" y="-15" width="380" height="380">
+                        <Transform target="x" value="-400 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 420) % 1050)" />
                         <Transform target="alpha" value="235" />
-                        <Image resource="cloud_storm_pair" />
+                        <Image resource="cloud_dark_2_sep" />
                     </PartImage>
-                    <PartImage x="-390" y="-15" width="390" height="390">
-                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 16.5) + 720) % 900)" />
+                    <PartImage x="-390" y="-30" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 630) % 1050)" />
                         <Transform target="alpha" value="220" />
-                        <Image resource="cloud_storm" />
+                        <Image resource="cloud_dark_2_stack" />
+                    </PartImage>
+                    <PartImage x="-390" y="5" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 12.5) + 840) % 1050)" />
+                        <Transform target="alpha" value="240" />
+                        <Image resource="cloud_dark_1" />
                     </PartImage>
                 </Compare>
 
-                <!-- TORMENTA ELÉCTRICA: 5 capas escalonadas de nubes oscuras cubriendo SIEMPRE la zona superior -->
+                <!-- LLOVIZNA DÍA: 3 capas ligeras (blancas + 1 oscura suave) -->
+                <Compare expression="is_drizzle_day">
+                    <PartImage x="-390" y="-30" width="370" height="370">
+                        <Transform target="x" value="-390 + ((([UTC_TIMESTAMP] / 1000.0) * 13.0) % 1100)" />
+                        <Transform target="alpha" value="215" />
+                        <Image resource="cloud_white_2_sep" />
+                    </PartImage>
+                    <PartImage x="-380" y="-40" width="360" height="360">
+                        <Transform target="x" value="-380 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 370) % 1100)" />
+                        <Transform target="alpha" value="190" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                    <PartImage x="-380" y="-15" width="360" height="360">
+                        <Transform target="x" value="-380 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 740) % 1100)" />
+                        <Transform target="alpha" value="225" />
+                        <Image resource="cloud_white_1" />
+                    </PartImage>
+                </Compare>
+
+                <!-- LLOVIZNA NOCHE: 3 capas de nubes negras -->
+                <Compare expression="is_drizzle_night">
+                    <PartImage x="-390" y="-30" width="370" height="370">
+                        <Transform target="x" value="-390 + ((([UTC_TIMESTAMP] / 1000.0) * 13.0) % 1100)" />
+                        <Transform target="alpha" value="220" />
+                        <Image resource="cloud_dark_2_sep" />
+                    </PartImage>
+                    <PartImage x="-380" y="-40" width="360" height="360">
+                        <Transform target="x" value="-380 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 370) % 1100)" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                    <PartImage x="-380" y="-15" width="360" height="360">
+                        <Transform target="x" value="-380 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 740) % 1100)" />
+                        <Transform target="alpha" value="225" />
+                        <Image resource="cloud_dark_2_stack" />
+                    </PartImage>
+                </Compare>
+
+                <!-- LLUVIA DÍA: 5 capas combinando nubes oscuras y blancas/grises -->
+                <Compare expression="is_rain_day">
+                    <PartImage x="-410" y="-50" width="400" height="400">
+                        <Transform target="x" value="-410 + ((([UTC_TIMESTAMP] / 1000.0) * 13.0) % 1000)" />
+                        <Image resource="cloud_dark_2_stack" />
+                    </PartImage>
+                    <PartImage x="-395" y="-35" width="385" height="385">
+                        <Transform target="x" value="-395 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 200) % 1000)" />
+                        <Transform target="alpha" value="225" />
+                        <Image resource="cloud_white_2_sep" />
+                    </PartImage>
+                    <PartImage x="-405" y="-40" width="395" height="395">
+                        <Transform target="x" value="-405 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 400) % 1000)" />
+                        <Transform target="alpha" value="235" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                    <PartImage x="-410" y="-25" width="395" height="395">
+                        <Transform target="x" value="-410 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 600) % 1000)" />
+                        <Transform target="alpha" value="230" />
+                        <Image resource="cloud_dark_2_sep" />
+                    </PartImage>
+                    <PartImage x="-395" y="-45" width="385" height="385">
+                        <Transform target="x" value="-395 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 800) % 1000)" />
+                        <Transform target="alpha" value="220" />
+                        <Image resource="cloud_white_1" />
+                    </PartImage>
+                </Compare>
+
+                <!-- LLUVIA NOCHE: 5 capas 100% nubes negras -->
+                <Compare expression="is_rain_night">
+                    <PartImage x="-410" y="-50" width="400" height="400">
+                        <Transform target="x" value="-410 + ((([UTC_TIMESTAMP] / 1000.0) * 13.0) % 1000)" />
+                        <Image resource="cloud_dark_2_stack" />
+                    </PartImage>
+                    <PartImage x="-395" y="-35" width="385" height="385">
+                        <Transform target="x" value="-395 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 200) % 1000)" />
+                        <Transform target="alpha" value="235" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                    <PartImage x="-405" y="-40" width="395" height="395">
+                        <Transform target="x" value="-405 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 400) % 1000)" />
+                        <Transform target="alpha" value="235" />
+                        <Image resource="cloud_dark_2_sep" />
+                    </PartImage>
+                    <PartImage x="-410" y="-25" width="395" height="395">
+                        <Transform target="x" value="-410 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 600) % 1000)" />
+                        <Transform target="alpha" value="240" />
+                        <Image resource="cloud_dark_2_stack" />
+                    </PartImage>
+                    <PartImage x="-395" y="-45" width="385" height="385">
+                        <Transform target="x" value="-395 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 800) % 1000)" />
+                        <Transform target="alpha" value="230" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                </Compare>
+
+                <!-- TORMENTA: 5 capas densas de nubes negras cargadas sobre los rayos -->
                 <Compare expression="is_storm_clouds">
-                    <PartImage x="-430" y="-75" width="430" height="430">
-                        <Transform target="x" value="-430 + ((([UTC_TIMESTAMP] / 1000.0) * 13.0) % 900)" />
-                        <Image resource="cloud_storm" />
+                    <PartImage x="-420" y="-75" width="415" height="415">
+                        <Transform target="x" value="-420 + ((([UTC_TIMESTAMP] / 1000.0) * 13.5) % 900)" />
+                        <Image resource="cloud_dark_2_stack" />
                     </PartImage>
-                    <PartImage x="-430" y="-65" width="430" height="430">
-                        <Transform target="x" value="-430 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 180) % 900)" />
-                        <Image resource="cloud_storm_pair" />
+                    <PartImage x="-410" y="-55" width="405" height="405">
+                        <Transform target="x" value="-410 + (((([UTC_TIMESTAMP] / 1000.0) * 13.5) + 180) % 900)" />
+                        <Image resource="cloud_dark_1" />
                     </PartImage>
-                    <PartImage x="-420" y="-55" width="420" height="420">
-                        <Transform target="x" value="-420 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 360) % 900)" />
-                        <Image resource="cloud_storm" />
+                    <PartImage x="-420" y="-65" width="415" height="415">
+                        <Transform target="x" value="-420 + (((([UTC_TIMESTAMP] / 1000.0) * 13.5) + 360) % 900)" />
+                        <Image resource="cloud_dark_2_sep" />
                     </PartImage>
-                    <PartImage x="-430" y="-70" width="430" height="430">
-                        <Transform target="x" value="-430 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 540) % 900)" />
-                        <Image resource="cloud_storm_pair" />
+                    <PartImage x="-420" y="-50" width="410" height="410">
+                        <Transform target="x" value="-420 + (((([UTC_TIMESTAMP] / 1000.0) * 13.5) + 540) % 900)" />
+                        <Image resource="cloud_dark_2_stack" />
                     </PartImage>
-                    <PartImage x="-420" y="-50" width="420" height="420">
-                        <Transform target="x" value="-420 + (((([UTC_TIMESTAMP] / 1000.0) * 13.0) + 720) % 900)" />
-                        <Image resource="cloud_storm" />
+                    <PartImage x="-410" y="-68" width="405" height="405">
+                        <Transform target="x" value="-410 + (((([UTC_TIMESTAMP] / 1000.0) * 13.5) + 720) % 900)" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                </Compare>
+
+                <!-- NIEBLA DÍA: nubes blancas -->
+                <Compare expression="is_fog_day_clouds">
+                    <PartImage x="-390" y="-30" width="370" height="370">
+                        <Transform target="x" value="-390 + ((([UTC_TIMESTAMP] / 1000.0) * 11.0) % 1100)" />
+                        <Transform target="alpha" value="195" />
+                        <Image resource="cloud_white_2_sep" />
+                    </PartImage>
+                    <PartImage x="-370" y="-10" width="350" height="350">
+                        <Transform target="x" value="-370 + (((([UTC_TIMESTAMP] / 1000.0) * 11.0) + 370) % 1100)" />
+                        <Transform target="alpha" value="205" />
+                        <Image resource="cloud_white_1" />
+                    </PartImage>
+                    <PartImage x="-390" y="-20" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 11.0) + 740) % 1100)" />
+                        <Transform target="alpha" value="185" />
+                        <Image resource="cloud_white_2_stack" />
+                    </PartImage>
+                </Compare>
+
+                <!-- NIEBLA NOCHE: nubes negras -->
+                <Compare expression="is_fog_night_clouds">
+                    <PartImage x="-390" y="-30" width="370" height="370">
+                        <Transform target="x" value="-390 + ((([UTC_TIMESTAMP] / 1000.0) * 11.0) % 1100)" />
+                        <Transform target="alpha" value="205" />
+                        <Image resource="cloud_dark_2_sep" />
+                    </PartImage>
+                    <PartImage x="-370" y="-10" width="350" height="350">
+                        <Transform target="x" value="-370 + (((([UTC_TIMESTAMP] / 1000.0) * 11.0) + 370) % 1100)" />
+                        <Transform target="alpha" value="210" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                    <PartImage x="-390" y="-20" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 11.0) + 740) % 1100)" />
+                        <Transform target="alpha" value="195" />
+                        <Image resource="cloud_dark_2_stack" />
+                    </PartImage>
+                </Compare>
+
+                <!-- VENTOSO DÍA: nubes blancas pasando rápido -->
+                <Compare expression="is_wind_day_clouds">
+                    <PartImage x="-380" y="-20" width="360" height="360">
+                        <Transform target="x" value="-380 + ((([UTC_TIMESTAMP] / 1000.0) * 28.0) % 1100)" />
+                        <Image resource="cloud_white_1" />
+                    </PartImage>
+                    <PartImage x="-390" y="0" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 28.0) + 550) % 1100)" />
+                        <Transform target="alpha" value="220" />
+                        <Image resource="cloud_white_2_sep" />
+                    </PartImage>
+                </Compare>
+
+                <!-- VENTOSO NOCHE: nubes negras pasando rápido -->
+                <Compare expression="is_wind_night_clouds">
+                    <PartImage x="-380" y="-20" width="360" height="360">
+                        <Transform target="x" value="-380 + ((([UTC_TIMESTAMP] / 1000.0) * 28.0) % 1100)" />
+                        <Image resource="cloud_dark_1" />
+                    </PartImage>
+                    <PartImage x="-390" y="0" width="370" height="370">
+                        <Transform target="x" value="-390 + (((([UTC_TIMESTAMP] / 1000.0) * 28.0) + 550) % 1100)" />
+                        <Transform target="alpha" value="220" />
+                        <Image resource="cloud_dark_2_sep" />
                     </PartImage>
                 </Compare>
             </Condition>
 
-            <!-- 4. NIEVE LEJANA (SUAVE SIN SALTOS), NIEBLA DESCENDENTE Y VIENTO -->
+            <!-- 4. NIEVE LEJANA (COPOS REALES), NIEBLA DESCENDENTE Y VIENTO -->
             <Condition>
                 <Expressions>
                     <Expression name="fx_has_snow"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 5 || [WEATHER.CONDITION] == 7 || [WEATHER.CONDITION] == 10 || [WEATHER.CONDITION] == 11)]]></Expression>
@@ -304,15 +505,13 @@
                     <Expression name="fx_has_wind"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.CONDITION] == 15]]></Expression>
                 </Expressions>
                 <Compare expression="fx_has_snow">
-                    <!-- Nieve lejana (seamless 450x900 cayendo suavemente con vaivén lateral) -->
                     <PartImage x="0" y="-450" width="450" height="900">
-                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 42.0) % 450)" />
-                        <Transform target="x" value="12 * sin([UTC_TIMESTAMP] / 1600.0)" />
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 38.0) % 450)" />
+                        <Transform target="x" value="14 * sin([UTC_TIMESTAMP] / 1700.0)" />
                         <Image resource="fx_snow_slow" />
                     </PartImage>
                 </Compare>
                 <Compare expression="fx_has_fog">
-                    <!-- Bruma/humo descendente suave de arriba hacia abajo (seamless 450x900) -->
                     <PartImage x="0" y="-450" width="450" height="900">
                         <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 34.0) % 450)" />
                         <Transform target="x" value="18 * sin([UTC_TIMESTAMP] / 2600.0)" />
@@ -322,7 +521,7 @@
                 </Compare>
                 <Compare expression="fx_has_wind">
                     <PartImage x="-60" y="70" width="570" height="190">
-                        <Transform target="x" value="-60 + ((([UTC_TIMESTAMP] / 1000.0) * 55.0) % 60)" />
+                        <Transform target="x" value="-60 + ((([UTC_TIMESTAMP] / 1000.0) * 65.0) % 60)" />
                         <Image resource="fx_wind_streaks" />
                     </PartImage>
                 </Compare>
@@ -330,75 +529,540 @@
         </Group>
 
         <!-- =================================================================
-             CAPA 5: INTERFAZ HUD (HORA, FECHA COMPLETA, BATERÍA, TEMPERATURA)
-             Ubicada DEBAJO de la lluvia, nieve cercana, niebla baja y empañado.
+             CAPA 5: INTERFAZ HUD + BISEL (VISIBLE EN ACTIVO Y ATENUADO EN AOD)
+             Solo los elementos que el usuario deje activos se muestran en AOD.
              ================================================================= -->
 
-        <!-- 5A. BATERÍA -->
-        <BooleanConfiguration id="show_battery">
+        <!-- 5A. BARRA DE BATERÍA POR EL BISEL INFERIOR (DE LAS 9 A LAS 3 PASANDO POR LAS 6, IZQUIERDA A DERECHA) -->
+        <BooleanConfiguration id="show_battery_bar">
             <BooleanOption id="TRUE">
-                <Group name="hud_battery" x="155" y="18" width="140" height="28">
-                    <Variant mode="AMBIENT" target="alpha" value="130" />
-                    <PartDraw x="0" y="0" width="140" height="28">
-                        <RoundRectangle x="0" y="0" width="140" height="28" cornerRadiusX="14" cornerRadiusY="14">
-                            <Fill color="#88000000" />
-                        </RoundRectangle>
-                    </PartDraw>
-                    <PartText x="0" y="2" width="140" height="24">
-                        <Text align="CENTER">
-                            <Font family="SYNC_TO_DEVICE" size="18" weight="BOLD" color="#FFFFFFFF">
-                                <Template>⚡ %s%%<Parameter expression="[BATTERY_PERCENT]" /></Template>
-                            </Font>
-                        </Text>
-                    </PartText>
-                </Group>
+                <PartDraw x="0" y="0" width="450" height="450">
+                    <Variant mode="AMBIENT" target="alpha" value="135" />
+                    <!-- Pista de fondo gris tenue (arco inferior 9h -> 6h -> 3h) -->
+                    <Arc centerX="225" centerY="225" width="434" height="434" startAngle="265" endAngle="95" direction="COUNTER_CLOCKWISE">
+                        <Stroke color="#44FFFFFF" thickness="6" cap="ROUND" />
+                    </Arc>
+                    <!-- Progreso de batería izquierda (9h = 265°) -> abajo (6h = 180°) -> derecha (3h = 95°) -->
+                    <Arc centerX="225" centerY="225" width="434" height="434" startAngle="265" endAngle="95" direction="COUNTER_CLOCKWISE">
+                        <Transform target="endAngle" value="265 - ([BATTERY_PERCENT] * 1.7)" />
+                        <Stroke color="#FF4ADE80" thickness="6" cap="ROUND" />
+                    </Arc>
+                </PartDraw>
             </BooleanOption>
         </BooleanConfiguration>
 
-        <!-- 5B. HORA DIGITAL -->
-        <BooleanConfiguration id="show_time">
+        <!-- 5B. CALORÍAS QUEMADAS — COMPLICATION SLOT CURVO ENTRE LAS 9 Y LAS 12 (SAMSUNG HEALTH / CUSTOM) -->
+        <ComplicationSlot
+            x="22" y="22" width="406" height="406"
+            slotId="1"
+            displayName="@string/complication_calories"
+            supportedTypes="SHORT_TEXT"
+            isCustomizable="TRUE">
+            <BoundingArc centerX="203" centerY="203" width="406" height="406" thickness="44" startAngle="-78" endAngle="-12" direction="CLOCKWISE" />
+            <DefaultProviderPolicy defaultSystemProvider="EMPTY" defaultSystemProviderType="SHORT_TEXT" />
+            <Complication type="SHORT_TEXT">
+                <PartText x="0" y="0" width="406" height="406">
+                    <Variant mode="AMBIENT" target="alpha" value="150" />
+                    <TextCircular centerX="203" centerY="203" width="384" height="384" startAngle="-78" endAngle="-12" direction="CLOCKWISE" align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFFFFF">
+                            <Template>🔥 %s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                        </Font>
+                    </TextCircular>
+                </PartText>
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- 5C. PASOS CAMINADOS CURVOS ENTRE LAS 12 Y LAS 3 -->
+        <BooleanConfiguration id="show_steps">
             <BooleanOption id="TRUE">
-                <DigitalClock x="45" y="246" width="360" height="96">
-                    <TimeText format="hh:mm" hourFormat="SYNC_TO_DEVICE" x="0" y="0" width="360" height="96" align="CENTER">
-                        <Font family="SYNC_TO_DEVICE" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" />
-                    </TimeText>
-                </DigitalClock>
+                <PartText x="22" y="22" width="406" height="406">
+                    <Variant mode="AMBIENT" target="alpha" value="150" />
+                    <TextCircular centerX="203" centerY="203" width="384" height="384" startAngle="12" endAngle="78" direction="CLOCKWISE" align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFFFFF">
+                            <Template>👟 %s<Parameter expression="[STEP_COUNT]" /></Template>
+                        </Font>
+                    </TextCircular>
+                </PartText>
             </BooleanOption>
         </BooleanConfiguration>
+
+        <!-- 5D. HORA CONFIGURABLE (TAMAÑO x FUENTE x FORMATO) -->
+        <ListConfiguration id="time_size">
+            <ListOption id="normal">
+                <Group name="time_scale_normal" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95" scaleX="1.0" scaleY="1.0">
+                    <Variant mode="AMBIENT" target="alpha" value="195" />
+                    <ListConfiguration id="time_font">
+                        <ListOption id="modern">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_pixel" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_pixel" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="classic">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_classic" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_classic" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="sport">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_sport" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_sport" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="digital">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_nothing" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_nothing" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                    </ListConfiguration>
+                </Group>
+            </ListOption>
+            <ListOption id="large">
+                <Group name="time_scale_large" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95" scaleX="1.14" scaleY="1.35">
+                    <Variant mode="AMBIENT" target="alpha" value="195" />
+                    <ListConfiguration id="time_font">
+                        <ListOption id="modern">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_pixel" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_pixel" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="classic">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_classic" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_classic" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="sport">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_sport" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_sport" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="digital">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_nothing" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_nothing" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                    </ListConfiguration>
+                </Group>
+            </ListOption>
+            <ListOption id="xl">
+                <Group name="time_scale_xl" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95" scaleX="1.26" scaleY="1.75">
+                    <Variant mode="AMBIENT" target="alpha" value="195" />
+                    <ListConfiguration id="time_font">
+                        <ListOption id="modern">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_pixel" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_pixel" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="classic">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_classic" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_classic" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="sport">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_sport" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_sport" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                        <ListOption id="digital">
+                            <ListConfiguration id="time_style">
+                                <ListOption id="h24">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_short">
+                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                </ListOption>
+                                <ListOption id="h12_ampm">
+                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_nothing" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
+                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_nothing" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                                </ListOption>
+                                <ListOption id="text_es">
+                                    <Condition>
+                                        <Expressions>
+                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
+                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
+                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
+                                        </Expressions>
+                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
+                                    </Condition>
+                                </ListOption>
+                            </ListConfiguration>
+                        </ListOption>
+                    </ListConfiguration>
+                </Group>
+            </ListOption>
+        </ListConfiguration>
 
         <!-- Línea divisoria -->
         <PartDraw x="72" y="348" width="306" height="2">
-            <Variant mode="AMBIENT" target="alpha" value="120" />
+            <Variant mode="AMBIENT" target="alpha" value="110" />
             <Rectangle x="0" y="0" width="306" height="2">
                 <Fill color="#AAFFFFFF" />
             </Rectangle>
         </PartDraw>
 
-        <!-- 5C. FECHA COMPLETA -->
-        <BooleanConfiguration id="show_date">
-            <BooleanOption id="TRUE">
-                <PartText x="68" y="360" width="222" height="38">
-                    <Variant mode="AMBIENT" target="alpha" value="175" />
+        <!-- 5E. FECHA CONFIGURABLE (CORTA / MEDIA / LARGA / OCULTA) -->
+        <ListConfiguration id="date_style">
+            <!-- Corta: 12/12/2026 -->
+            <ListOption id="short">
+                <PartText x="62" y="360" width="228" height="38">
+                    <Variant mode="AMBIENT" target="alpha" value="165" />
                     <Text align="CENTER">
-                        <Font family="SYNC_TO_DEVICE" size="23" weight="BOLD" color="#FFFFFFFF">
-                            <Template>%s %s %s<Parameter expression="[DAY_OF_WEEK_S]" /><Parameter expression="[MONTH_S]" /><Parameter expression="[DAY_Z]" /></Template>
+                        <Font family="SYNC_TO_DEVICE" size="22" weight="BOLD" color="#FFFFFFFF">
+                            <Template>%s/%s/%s<Parameter expression="[DAY_Z]" /><Parameter expression="[MONTH_Z]" /><Parameter expression="[YEAR]" /></Template>
                         </Font>
                     </Text>
                 </PartText>
-            </BooleanOption>
-        </BooleanConfiguration>
+            </ListOption>
+            <!-- Media: 12-DIC-26 -->
+            <ListOption id="medium">
+                <PartText x="62" y="360" width="228" height="38">
+                    <Variant mode="AMBIENT" target="alpha" value="165" />
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="22" weight="BOLD" color="#FFFFFFFF">
+                            <Template>%s-%s-%s<Parameter expression="[DAY_Z]" /><Parameter expression="[MONTH_S]" /><Parameter expression="[YEAR_S]" /></Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </ListOption>
+            <!-- Larga: 12 Diciembre 2026 -->
+            <ListOption id="long">
+                <PartText x="52" y="360" width="238" height="38">
+                    <Variant mode="AMBIENT" target="alpha" value="165" />
+                    <Text align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="18" weight="BOLD" color="#FFFFFFFF">
+                            <Template>%s %s %s<Parameter expression="[DAY]" /><Parameter expression="[MONTH_F]" /><Parameter expression="[YEAR]" /></Template>
+                        </Font>
+                    </Text>
+                </PartText>
+            </ListOption>
+        </ListConfiguration>
 
-        <!-- 5D. TEMPERATURA -->
+        <!-- 5F. TEMPERATURA -->
         <BooleanConfiguration id="show_temperature">
             <BooleanOption id="TRUE">
                 <PartDraw x="296" y="354" width="2" height="42">
-                    <Variant mode="AMBIENT" target="alpha" value="120" />
+                    <Variant mode="AMBIENT" target="alpha" value="110" />
                     <Rectangle x="0" y="0" width="2" height="42">
                         <Fill color="#AAFFFFFF" />
                     </Rectangle>
                 </PartDraw>
                 <PartText x="304" y="360" width="84" height="38">
-                    <Variant mode="AMBIENT" target="alpha" value="175" />
+                    <Variant mode="AMBIENT" target="alpha" value="165" />
                     <Text align="CENTER">
                         <Font family="SYNC_TO_DEVICE" size="25" weight="BOLD" color="#FFFFFFFF">
                             <Template>%s°<Parameter expression="[WEATHER.IS_AVAILABLE] ? round([WEATHER.TEMPERATURE]) : '--'" /></Template>
@@ -414,28 +1078,24 @@
         <Group name="watch_crystal_fx" x="0" y="0" width="450" height="450">
             <Variant mode="AMBIENT" target="alpha" value="0" />
 
-            <!-- 6A. LLUVIA EN TODA LA PANTALLA + GOTAS LIMPIAS RESBALANDO + EMPAÑADO SUTIL -->
+            <!-- 6A. LLUVIA NORMAL / FUERTE / TORMENTA -->
             <Condition>
                 <Expressions>
-                    <Expression name="crystal_rain"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6 || [WEATHER.CONDITION] == 9 || [WEATHER.CONDITION] == 12)]]></Expression>
+                    <Expression name="crystal_rain_full"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 4 || [WEATHER.CONDITION] == 6 || [WEATHER.CONDITION] == 9)]]></Expression>
                 </Expressions>
-                <Compare expression="crystal_rain">
-                    <!-- Lluvia plano lejano (lenta) -->
+                <Compare expression="crystal_rain_full">
                     <PartImage x="0" y="-450" width="450" height="900">
                         <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 260.0) % 450)" />
                         <Image resource="fx_rain_slow" />
                     </PartImage>
-                    <!-- Lluvia plano cercano (rápida, por encima de la hora) -->
                     <PartImage x="0" y="-450" width="450" height="900">
                         <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 440.0) % 450)" />
                         <Image resource="fx_rain_fast" />
                     </PartImage>
-                    <!-- Gotas limpias resbalando lentamente por el cristal (sin líneas arriba) -->
                     <PartImage x="0" y="-450" width="450" height="900">
                         <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 22.0) % 450)" />
                         <Image resource="fx_glass_drops_slide" />
                     </PartImage>
-                    <!-- Cristal empañado sutil que respira sin blanquear demasiado la pantalla -->
                     <BooleanConfiguration id="show_glass_fog">
                         <BooleanOption id="TRUE">
                             <PartImage x="0" y="0" width="450" height="450">
@@ -447,39 +1107,87 @@
                 </Compare>
             </Condition>
 
-            <!-- 6B. NIEVE CERCANA (CAYENDO SUAVEMENTE POR ENCIMA DE LA HORA SIN SALTOS) -->
+            <!-- 6B. LLOVIZNA (LLUVIA LIGERA) + PRISMA ARCOÍRIS SUAVE DE DÍA -->
             <Condition>
                 <Expressions>
-                    <Expression name="crystal_snow"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 5 || [WEATHER.CONDITION] == 7 || [WEATHER.CONDITION] == 10 || [WEATHER.CONDITION] == 11)]]></Expression>
+                    <Expression name="crystal_drizzle_day"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && [WEATHER.CONDITION] == 12]]></Expression>
+                    <Expression name="crystal_drizzle_night"><![CDATA[[WEATHER.IS_AVAILABLE] && ![WEATHER.IS_DAY] && [WEATHER.CONDITION] == 12]]></Expression>
+                </Expressions>
+                <Compare expression="crystal_drizzle_day">
+                    <PartImage x="0" y="-450" width="450" height="900">
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 230.0) % 450)" />
+                        <Transform target="alpha" value="185" />
+                        <Image resource="fx_rain_slow" />
+                    </PartImage>
+                    <PartImage x="0" y="-450" width="450" height="900">
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 16.0) % 450)" />
+                        <Transform target="alpha" value="160" />
+                        <Image resource="fx_glass_drops_slide" />
+                    </PartImage>
+                    <!-- Prisma óptico arcoíris muy suave sobre el cristal -->
+                    <PartImage x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
+                        <Transform target="alpha" value="110 + 75 * sin([UTC_TIMESTAMP] / 2600.0)" />
+                        <Transform target="angle" value="4 * sin([UTC_TIMESTAMP] / 3800.0)" />
+                        <Image resource="fx_rainbow_prism" />
+                    </PartImage>
+                </Compare>
+                <Compare expression="crystal_drizzle_night">
+                    <PartImage x="0" y="-450" width="450" height="900">
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 230.0) % 450)" />
+                        <Transform target="alpha" value="185" />
+                        <Image resource="fx_rain_slow" />
+                    </PartImage>
+                    <PartImage x="0" y="-450" width="450" height="900">
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 16.0) % 450)" />
+                        <Transform target="alpha" value="160" />
+                        <Image resource="fx_glass_drops_slide" />
+                    </PartImage>
+                </Compare>
+            </Condition>
+
+            <!-- 6C. NIEVE CERCANA (Y AGUANIEVE CON LLUVIA SUAVE MEZCLADA) -->
+            <Condition>
+                <Expressions>
+                    <Expression name="crystal_snow"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 5 || [WEATHER.CONDITION] == 7 || [WEATHER.CONDITION] == 11)]]></Expression>
+                    <Expression name="crystal_sleet"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.CONDITION] == 10]]></Expression>
                 </Expressions>
                 <Compare expression="crystal_snow">
                     <PartImage x="0" y="-450" width="450" height="900">
-                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 78.0) % 450)" />
-                        <Transform target="x" value="-14 * sin([UTC_TIMESTAMP] / 1200.0)" />
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 72.0) % 450)" />
+                        <Transform target="x" value="-16 * sin([UTC_TIMESTAMP] / 1300.0)" />
+                        <Image resource="fx_snow_fast" />
+                    </PartImage>
+                </Compare>
+                <Compare expression="crystal_sleet">
+                    <PartImage x="0" y="-450" width="450" height="900">
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 260.0) % 450)" />
+                        <Transform target="alpha" value="170" />
+                        <Image resource="fx_rain_slow" />
+                    </PartImage>
+                    <PartImage x="0" y="-450" width="450" height="900">
+                        <Transform target="y" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 72.0) % 450)" />
+                        <Transform target="x" value="-16 * sin([UTC_TIMESTAMP] / 1300.0)" />
                         <Image resource="fx_snow_fast" />
                     </PartImage>
                 </Compare>
             </Condition>
 
-            <!-- 6C. NIEBLA / HUMO RÁPIDO PASANDO POR LA PARTE BAJA DEL RELOJ -->
+            <!-- 6D. NIEBLA / HUMO RÁPIDO PASANDO POR LA PARTE BAJA -->
             <Condition>
                 <Expressions>
                     <Expression name="crystal_fog"><![CDATA[[WEATHER.IS_AVAILABLE] && ([WEATHER.CONDITION] == 3 || [WEATHER.CONDITION] == 13)]]></Expression>
                 </Expressions>
                 <Compare expression="crystal_fog">
-                    <!-- Velo de humo bajo pasando rápido de izquierda a derecha -->
                     <PartImage x="-450" y="195" width="900" height="260">
                         <Transform target="x" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 80.0) % 450)" />
                         <Transform target="alpha" value="185 + 45 * sin([UTC_TIMESTAMP] / 2100.0)" />
                         <Image resource="fx_fog_low_fast" />
                     </PartImage>
-                    <!-- Segunda ráfaga de humo aún más rápida pegada al borde inferior -->
                     <PartImage x="-450" y="235" width="900" height="220">
                         <Transform target="x" value="-450 + ((([UTC_TIMESTAMP] / 1000.0) * 125.0) % 450)" />
                         <Transform target="alpha" value="195 + 50 * cos([UTC_TIMESTAMP] / 1700.0)" />
                         <Image resource="fx_fog_low_fast_b" />
                     </PartImage>
-                    <!-- Ligera bruma empañada sobre el vidrio -->
                     <BooleanConfiguration id="show_glass_fog">
                         <BooleanOption id="TRUE">
                             <PartImage x="0" y="0" width="450" height="450">
@@ -488,20 +1196,6 @@
                             </PartImage>
                         </BooleanOption>
                     </BooleanConfiguration>
-                </Compare>
-            </Condition>
-
-            <!-- 6D. DESTELLO / REFLEJO DEL SOL SOBRE EL CRISTAL DEL RELOJ -->
-            <Condition>
-                <Expressions>
-                    <Expression name="crystal_sun_glare"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14)]]></Expression>
-                </Expressions>
-                <Compare expression="crystal_sun_glare">
-                    <PartImage x="0" y="0" width="450" height="450" pivotX="0.5" pivotY="0.5">
-                        <Transform target="alpha" value="95 + 65 * sin([UTC_TIMESTAMP] / 1900.0)" />
-                        <Transform target="angle" value="5 * sin([UTC_TIMESTAMP] / 3000.0)" />
-                        <Image resource="fx_sun_glass_flare" />
-                    </PartImage>
                 </Compare>
             </Condition>
         </Group>

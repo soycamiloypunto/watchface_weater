@@ -6,6 +6,10 @@
 <title>Weather Land — Realistic AMOLED Watch Face for Wear OS</title>
 <meta name="description" content="Weather Land: Realistic AMOLED live weather watch face for Wear OS 5+ (Galaxy Watch 4+). Native weather animations, lunar phases, and interactive preview." />
 <style>
+  @font-face { font-family: 'FontPixel';   src: url('app/src/main/res/font/font_pixel.ttf') format('truetype'); }
+  @font-face { font-family: 'FontNothing'; src: url('app/src/main/res/font/font_nothing.ttf') format('truetype'); }
+  @font-face { font-family: 'FontSport';   src: url('app/src/main/res/font/font_sport.ttf') format('truetype'); }
+  @font-face { font-family: 'FontClassic'; src: url('app/src/main/res/font/font_classic.ttf') format('truetype'); }
   :root {
     --bg: #07090f;
     --card: #101420;
@@ -189,12 +193,45 @@
         </div>
         <div class="controls" id="modes"></div>
         <div class="toggles">
-          <label><input type="checkbox" id="tTime" checked /> Hora</label>
-          <label><input type="checkbox" id="tDate" checked /> Fecha completa</label>
-          <label><input type="checkbox" id="tBatt" checked /> Batería</label>
+          <label>Hora:
+            <select id="sTime" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
+              <option value="h24" selected>24h (14:00)</option>
+              <option value="h12_short">12h (02:00)</option>
+              <option value="h12_ampm">12h AM/PM</option>
+              <option value="text_es">Texto (Mediodía / y cuarto)</option>
+              <option value="hidden">Oculta</option>
+            </select>
+          </label>
+          <label>Fuente:
+            <select id="sFont" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
+              <option value="FontPixel" selected>Pixel (Moderna)</option>
+              <option value="FontNothing">Nothing (Puntos)</option>
+              <option value="FontSport">Deportiva (Condensada)</option>
+              <option value="FontClassic">Clásica (Serif)</option>
+            </select>
+          </label>
+          <label>Tamaño Hora:
+            <select id="sSize" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
+              <option value="normal" selected>Normal (1x)</option>
+              <option value="large">Grande (1.35x)</option>
+              <option value="xl">Gigante (1.75x)</option>
+            </select>
+          </label>
+          <label>Fecha:
+            <select id="sDate" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
+              <option value="short">12/12/2026</option>
+              <option value="medium" selected>12-DIC-26</option>
+              <option value="long">12 Diciembre 2026</option>
+              <option value="hidden">Oculta</option>
+            </select>
+          </label>
+          <label><input type="checkbox" id="tBatt" checked /> Barra Batería (3h–9h)</label>
+          <label><input type="range" id="rBatt" min="5" max="100" value="82" style="width:70px" /> <span id="battVal">82%</span></label>
+          <label><input type="checkbox" id="tCal" checked /> Calorías (9h–12h)</label>
+          <label><input type="checkbox" id="tSteps" checked /> Pasos (12h–3h)</label>
           <label><input type="checkbox" id="tTemp" checked /> Temperatura</label>
           <label><input type="checkbox" id="tFog" checked /> Vidrio empañado</label>
-          <label><input type="checkbox" id="tAod" /> Modo AOD (Ambient)</label>
+          <label><input type="checkbox" id="tAod" /> 🌙 Modo AOD</label>
         </div>
       </div>
     </section>
@@ -265,14 +302,17 @@
 
 <script>
 const BASE = 'app/src/main/res/drawable/';
-const CACHE_VER = 'v2';
+const CACHE_VER = 'v5';
 const FILES = [
-  'sol', 'moon_full', 'moon_waxing', 'moon_waning',
-  'cloud_day', 'cloud_storm', 'cloud_trio', 'cloud_pair', 'cloud_storm_pair',
+  'sol',
+  'moon_new', 'moon_waxing_crescent', 'moon_first_quarter', 'moon_waxing_gibbous',
+  'moon_full', 'moon_waning_gibbous', 'moon_last_quarter', 'moon_waning_crescent',
+  'cloud_white_1', 'cloud_white_2_sep', 'cloud_white_2_stack', 'cloud_white_3',
+  'cloud_dark_1', 'cloud_dark_2_sep', 'cloud_dark_2_stack',
   'lightning_left', 'lightning_center', 'lightning_double',
-  'fx_sun_corona', 'fx_sun_flares', 'fx_sun_glass_flare', 'fx_storm_flash',
-  'fx_rain_fast', 'fx_rain_slow', 'fx_glass_fog', 'fx_glass_drops_slide',
-  'fx_snow_slow', 'fx_snow_fast',
+  'fx_sun_corona', 'fx_sun_shimmer_a', 'fx_sun_shimmer_b', 'fx_storm_flash',
+  'fx_rain_fast', 'fx_rain_slow', 'fx_glass_fog', 'fx_glass_drops_slide', 'fx_rainbow_prism',
+  'fx_snow_slow', 'fx_snow_fast', 'fx_wind_streaks',
   'fx_fog_descend', 'fx_fog_low_fast', 'fx_fog_low_fast_b',
   'celestial_stars_a', 'celestial_stars_b'
 ];
@@ -284,17 +324,30 @@ for (const name of FILES) {
 }
 
 const MODES = [
-  { id: 'sunny',        label: '☀️ Soleado',          temp: 28 },
-  { id: 'partly_day',   label: '⛅ Seminublado Día',   temp: 24 },
-  { id: 'cloudy',       label: '☁️ Muy Nublado',       temp: 19 },
-  { id: 'rain',         label: '🌧️ Lluvia + Empañado', temp: 16 },
-  { id: 'storm',        label: '⛈️ Tormenta + Rayos',  temp: 15 },
-  { id: 'moon_full',    label: '🌕 Luna Llena',        temp: 14 },
-  { id: 'moon_waxing',  label: '🌓 Cuarto Creciente',  temp: 13 },
-  { id: 'moon_waning',  label: '🌗 Cuarto Menguante',  temp: 12 },
-  { id: 'partly_night', label: '☁️🌙 Noche Seminublada', temp: 13 },
-  { id: 'snow',         label: '❄️ Nieve',             temp: -1 },
-  { id: 'fog',          label: '🌫️ Niebla',            temp: 11 }
+  { id: 'sunny',                label: '☀️ Soleado',                temp: 28 },
+  { id: 'partly_day',           label: '⛅ Seminublado Día',         temp: 24 },
+  { id: 'partly_night',         label: '☁️🌙 Seminublado Noche',     temp: 13 },
+  { id: 'cloudy_day',           label: '☁️ Muy Nublado Día',        temp: 19 },
+  { id: 'cloudy_night',         label: '☁️🌙 Muy Nublado Noche',     temp: 12 },
+  { id: 'drizzle_day',          label: '🌦️🌈 Llovizna Día (Prisma)', temp: 20 },
+  { id: 'drizzle_night',        label: '🌧️🌙 Llovizna Noche',       temp: 14 },
+  { id: 'rain_day',             label: '🌧️ Lluvia Día',             temp: 17 },
+  { id: 'rain_night',           label: '🌧️🌙 Lluvia Noche',         temp: 13 },
+  { id: 'storm',                label: '⛈️ Tormenta + Rayos',        temp: 15 },
+  { id: 'snow_day',             label: '❄️ Nieve Día',              temp: 0  },
+  { id: 'snow_night',           label: '❄️🌙 Nieve Noche',          temp: -3 },
+  { id: 'sleet_day',            label: '🌨️ Aguanieve',              temp: 1  },
+  { id: 'fog_day',              label: '🌫️ Niebla Día',             temp: 13 },
+  { id: 'fog_night',            label: '🌫️🌙 Niebla Noche',         temp: 10 },
+  { id: 'wind_day',             label: '💨 Ventoso Día',            temp: 21 },
+  { id: 'moon_new',             label: '🌑 1. Luna Nueva',          temp: 12 },
+  { id: 'moon_waxing_crescent', label: '🌒 2. Creciente',           temp: 13 },
+  { id: 'moon_first_quarter',   label: '🌓 3. Cuarto Creciente',    temp: 13 },
+  { id: 'moon_waxing_gibbous',  label: '🌔 4. Gibosa Creciente',    temp: 14 },
+  { id: 'moon_full',            label: '🌕 5. Luna Llena',          temp: 14 },
+  { id: 'moon_waning_gibbous',  label: '🌖 6. Gibosa Menguante',    temp: 13 },
+  { id: 'moon_last_quarter',    label: '🌗 7. Cuarto Menguante',    temp: 12 },
+  { id: 'moon_waning_crescent', label: '🌘 8. Luna Menguante',      temp: 12 }
 ];
 
 let mode = 'sunny';
@@ -331,34 +384,83 @@ function drawImg(name, x, y, w, h, alpha = 1, angleDeg = 0, scale = 1) {
   ctx.restore();
 }
 
+function drawCurvedText(text, radius, centerClockDeg, font, alpha = 1) {
+  ctx.save();
+  ctx.globalAlpha = clamp(alpha, 0, 1);
+  ctx.font = font;
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const chars = Array.from(text);
+  const widths = chars.map(ch => ctx.measureText(ch).width);
+  const totalWidth = widths.reduce((a, b) => a + b, 0);
+  const totalAngle = totalWidth / radius;
+  let curAngle = ((centerClockDeg - 90) * Math.PI / 180) - totalAngle / 2;
+  for (let i = 0; i < chars.length; i++) {
+    const half = (widths[i] / 2) / radius;
+    curAngle += half;
+    ctx.save();
+    ctx.translate(225 + Math.cos(curAngle) * radius, 225 + Math.sin(curAngle) * radius);
+    ctx.rotate(curAngle + Math.PI / 2);
+    ctx.fillText(chars[i], 0, 0);
+    ctx.restore();
+    curAngle += half;
+  }
+  ctx.restore();
+}
+
+function formatTimeWordsEs(h24, m) {
+  const h12 = (h24 % 12) || 12;
+  const nextH12 = (h12 % 12) + 1;
+  if (h24 === 12 && m === 0) return 'Mediodía';
+  if (h24 === 0 && m === 0) return 'Medianoche';
+  if (m === 0) return `Las ${h12} en punto`;
+  if (m === 15) return `Las ${h12} y cuarto`;
+  if (m === 30) return `Las ${h12} y media`;
+  if (m === 45) return `Cuarto para las ${nextH12}`;
+  return `Las ${h12} y ${m}`;
+}
+
 function render(nowMs) {
   const t = nowMs / 1000;
-  const showTime = document.getElementById('tTime').checked;
-  const showDate = document.getElementById('tDate').checked;
-  const showBatt = document.getElementById('tBatt').checked;
-  const showTemp = document.getElementById('tTemp').checked;
-  const showFog  = document.getElementById('tFog').checked;
-  const isAod    = document.getElementById('tAod').checked;
-  const curMode  = MODES.find(m => m.id === mode);
+  const timeStyle = document.getElementById('sTime').value;
+  const timeFont  = document.getElementById('sFont').value;
+  const timeSize  = document.getElementById('sSize').value;
+  const dateStyle = document.getElementById('sDate').value;
+  const showBatt  = document.getElementById('tBatt').checked;
+  const battPct   = Number(document.getElementById('rBatt').value);
+  document.getElementById('battVal').textContent = battPct + '%';
+  const showCal   = document.getElementById('tCal').checked;
+  const showSteps = document.getElementById('tSteps').checked;
+  const showTemp  = document.getElementById('tTemp').checked;
+  const showFog   = document.getElementById('tFog').checked;
+  const isAod     = document.getElementById('tAod').checked;
+  const curMode   = MODES.find(m => m.id === mode);
 
   ctx.clearRect(0, 0, 450, 450);
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, 450, 450);
 
   if (!isAod) {
+    // 1. ASTROS
     if (mode === 'sunny' || mode === 'partly_day') {
-      drawImg('fx_sun_corona', -35, -100, 520, 520, (190 + 55 * Math.sin(nowMs / 1400)) / 255, (nowMs / 220) % 360);
-      drawImg('fx_sun_flares', 45, -20, 360, 360, (160 + 80 * Math.sin(nowMs / 1300)) / 255, (nowMs / 260) % 360, 1 + 0.045 * Math.sin(nowMs / 1500));
-      drawImg('fx_sun_flares', 45, -20, 360, 360, (135 + 75 * Math.cos(nowMs / 1700)) / 255, 360 - ((nowMs / 340) % 360), 1 + 0.04 * Math.cos(nowMs / 1900));
-      drawImg('sol', 65, 0, 320, 320, 1, 0, 1 + 0.02 * Math.sin(nowMs / 1400));
+      drawImg('fx_sun_corona',    -35, -100, 520, 520, (150 + 50 * Math.sin(nowMs / 1600)) / 255, (nowMs / 260) % 360);
+      drawImg('fx_sun_shimmer_a',  -5,  -70, 460, 460, (125 + 110 * Math.sin(nowMs / 1100)) / 255, (nowMs / 190) % 360, 1 + 0.06 * Math.sin(nowMs / 1200));
+      drawImg('fx_sun_shimmer_b',  -5,  -70, 460, 460, (115 + 115 * Math.cos(nowMs / 1350)) / 255, 360 - ((nowMs / 240) % 360), 1 + 0.05 * Math.cos(nowMs / 1450));
+      drawImg('sol',               65,    0, 320, 320, 1, 0, 1 + 0.02 * Math.sin(nowMs / 1400));
     }
-    if (mode === 'moon_full' || mode === 'moon_waxing' || mode === 'moon_waning' || mode === 'partly_night') {
+    if (mode === 'drizzle_day') {
+      drawImg('fx_sun_corona', -35, -100, 520, 520, 95 / 255);
+      drawImg('sol',            75,   10, 300, 300, 170 / 255);
+    }
+    if (mode.startsWith('moon_') || mode === 'partly_night') {
       drawImg('celestial_stars_a', 0, 0, 450, 450, (110 + 115 * Math.sin(nowMs / 1300)) / 255);
       drawImg('celestial_stars_b', 0, 0, 450, 450, (110 + 115 * Math.cos(nowMs / 1700)) / 255);
       const mImg = mode === 'partly_night' ? 'moon_full' : mode;
       drawImg(mImg, 85, 10, 280, 280, 1);
     }
 
+    // 2. RELÁMPAGOS SLIDE-DOWN + FLASH
     if (mode === 'storm') {
       const c = t % 12;
       const flash = (c < 0.35) || (c > 4.0 && c < 4.40) || (c > 8.2 && c < 8.65);
@@ -374,88 +476,191 @@ function render(nowMs) {
       }
     }
 
-    if (mode === 'partly_day' || mode === 'partly_night') {
-      drawImg('cloud_pair', -380 + ((t * 13.0) % 860), -25, 380, 380, 210 / 255);
-      drawImg('cloud_day',  -360 + (((t * 16.0) + 215) % 860), 10, 360, 360, 1);
-      drawImg('cloud_trio', -390 + (((t * 14.5) + 430) % 860), -5, 390, 390, 230 / 255);
-      drawImg('cloud_day',  -350 + (((t * 18.0) + 645) % 860), 25, 350, 350, 220 / 255);
-    } else if (mode === 'cloudy' || mode === 'snow') {
-      drawImg('cloud_storm_pair', -420 + ((t * 9.0) % 900), -55, 420, 420, 205 / 255);
-      drawImg('cloud_storm',      -400 + (((t * 11.0) + 150) % 900), -35, 400, 400, 215 / 255);
-      drawImg('cloud_trio',       -400 + (((t * 13.0) + 300) % 900), -20, 400, 400, 1);
-      drawImg('cloud_pair',       -390 + (((t * 14.5) + 450) % 900), 5, 390, 390, 235 / 255);
-      drawImg('cloud_day',        -380 + (((t * 16.0) + 600) % 900), -10, 380, 380, 1);
-      drawImg('cloud_trio',       -370 + (((t * 17.5) + 750) % 900), 25, 370, 370, 240 / 255);
-    } else if (mode === 'rain') {
-      drawImg('cloud_storm_pair', -420 + ((t * 11.0) % 900), -55, 420, 420, 1);
-      drawImg('cloud_storm',      -410 + (((t * 13.0) + 180) % 900), -35, 410, 410, 1);
-      drawImg('cloud_trio',       -400 + (((t * 15.0) + 360) % 900), -20, 400, 400, 215 / 255);
-      drawImg('cloud_storm_pair', -410 + (((t * 14.0) + 540) % 900), -40, 410, 410, 235 / 255);
-      drawImg('cloud_storm',      -390 + (((t * 16.5) + 720) % 900), -15, 390, 390, 220 / 255);
+    // 3. NUBES DIFERENCIADAS DÍA / NOCHE
+    if (mode === 'partly_day') {
+      drawImg('cloud_white_1',     -360 + ((t * 14.0) % 1180),          10, 330, 330, 1);
+      drawImg('cloud_white_2_sep', -380 + (((t * 14.0) + 590) % 1180), -15, 360, 360, 230 / 255);
+    } else if (mode === 'partly_night') {
+      drawImg('cloud_dark_1',     -360 + ((t * 14.0) % 1180),          10, 330, 330, 1);
+      drawImg('cloud_dark_2_sep', -380 + (((t * 14.0) + 590) % 1180), -15, 360, 360, 230 / 255);
+    } else if (mode === 'cloudy_day' || mode === 'snow_day' || mode === 'sleet_day') {
+      drawImg('cloud_white_3',       -400 + ((t * 12.5) % 1050),         -35, 380, 380, 1);
+      drawImg('cloud_white_1',       -390 + (((t * 12.5) + 210) % 1050), -45, 370, 370, 225 / 255);
+      drawImg('cloud_white_2_stack', -400 + (((t * 12.5) + 420) % 1050), -15, 380, 380, 235 / 255);
+      drawImg('cloud_white_2_sep',   -390 + (((t * 12.5) + 630) % 1050), -30, 370, 370, 220 / 255);
+      drawImg('cloud_white_1',       -390 + (((t * 12.5) + 840) % 1050),   5, 370, 370, 240 / 255);
+    } else if (mode === 'cloudy_night' || mode === 'snow_night') {
+      drawImg('cloud_dark_2_stack', -400 + ((t * 12.5) % 1050),         -35, 380, 380, 1);
+      drawImg('cloud_dark_1',       -390 + (((t * 12.5) + 210) % 1050), -45, 370, 370, 225 / 255);
+      drawImg('cloud_dark_2_sep',   -400 + (((t * 12.5) + 420) % 1050), -15, 380, 380, 235 / 255);
+      drawImg('cloud_dark_2_stack', -390 + (((t * 12.5) + 630) % 1050), -30, 370, 370, 220 / 255);
+      drawImg('cloud_dark_1',       -390 + (((t * 12.5) + 840) % 1050),   5, 370, 370, 240 / 255);
+    } else if (mode === 'drizzle_day') {
+      drawImg('cloud_white_2_sep', -390 + ((t * 13.0) % 1100),         -30, 370, 370, 215 / 255);
+      drawImg('cloud_dark_1',      -380 + (((t * 13.0) + 370) % 1100), -40, 360, 360, 190 / 255);
+      drawImg('cloud_white_1',     -380 + (((t * 13.0) + 740) % 1100), -15, 360, 360, 225 / 255);
+    } else if (mode === 'drizzle_night') {
+      drawImg('cloud_dark_2_sep',   -390 + ((t * 13.0) % 1100),         -30, 370, 370, 220 / 255);
+      drawImg('cloud_dark_1',       -380 + (((t * 13.0) + 370) % 1100), -40, 360, 360, 1);
+      drawImg('cloud_dark_2_stack', -380 + (((t * 13.0) + 740) % 1100), -15, 360, 360, 225 / 255);
+    } else if (mode === 'rain_day') {
+      drawImg('cloud_dark_2_stack', -410 + ((t * 13.0) % 1000),         -50, 400, 400, 1);
+      drawImg('cloud_white_2_sep',  -395 + (((t * 13.0) + 200) % 1000), -35, 385, 385, 225 / 255);
+      drawImg('cloud_dark_1',       -405 + (((t * 13.0) + 400) % 1000), -40, 395, 395, 235 / 255);
+      drawImg('cloud_dark_2_sep',   -410 + (((t * 13.0) + 600) % 1000), -25, 395, 395, 230 / 255);
+      drawImg('cloud_white_1',      -395 + (((t * 13.0) + 800) % 1000), -45, 385, 385, 220 / 255);
+    } else if (mode === 'rain_night') {
+      drawImg('cloud_dark_2_stack', -410 + ((t * 13.0) % 1000),         -50, 400, 400, 1);
+      drawImg('cloud_dark_1',       -395 + (((t * 13.0) + 200) % 1000), -35, 385, 385, 235 / 255);
+      drawImg('cloud_dark_2_sep',   -405 + (((t * 13.0) + 400) % 1000), -40, 395, 395, 235 / 255);
+      drawImg('cloud_dark_2_stack', -410 + (((t * 13.0) + 600) % 1000), -25, 395, 395, 240 / 255);
+      drawImg('cloud_dark_1',       -395 + (((t * 13.0) + 800) % 1000), -45, 385, 385, 230 / 255);
     } else if (mode === 'storm') {
-      drawImg('cloud_storm',      -430 + ((t * 13.0) % 900), -75, 430, 430, 1);
-      drawImg('cloud_storm_pair', -430 + (((t * 13.0) + 180) % 900), -65, 430, 430, 1);
-      drawImg('cloud_storm',      -420 + (((t * 13.0) + 360) % 900), -55, 420, 420, 1);
-      drawImg('cloud_storm_pair', -430 + (((t * 13.0) + 540) % 900), -70, 430, 430, 1);
-      drawImg('cloud_storm',      -420 + (((t * 13.0) + 720) % 900), -50, 420, 420, 1);
+      drawImg('cloud_dark_2_stack', -420 + ((t * 13.5) % 900),         -75, 415, 415, 1);
+      drawImg('cloud_dark_1',       -410 + (((t * 13.5) + 180) % 900), -55, 405, 405, 1);
+      drawImg('cloud_dark_2_sep',   -420 + (((t * 13.5) + 360) % 900), -65, 415, 415, 1);
+      drawImg('cloud_dark_2_stack', -420 + (((t * 13.5) + 540) % 900), -50, 410, 410, 1);
+      drawImg('cloud_dark_1',       -410 + (((t * 13.5) + 720) % 900), -68, 405, 405, 1);
+    } else if (mode === 'fog_day') {
+      drawImg('cloud_white_2_sep',   -390 + ((t * 11.0) % 1100),         -30, 370, 370, 195 / 255);
+      drawImg('cloud_white_1',       -370 + (((t * 11.0) + 370) % 1100), -10, 350, 350, 205 / 255);
+      drawImg('cloud_white_2_stack', -390 + (((t * 11.0) + 740) % 1100), -20, 370, 370, 185 / 255);
+    } else if (mode === 'fog_night') {
+      drawImg('cloud_dark_2_sep',   -390 + ((t * 11.0) % 1100),         -30, 370, 370, 205 / 255);
+      drawImg('cloud_dark_1',       -370 + (((t * 11.0) + 370) % 1100), -10, 350, 350, 210 / 255);
+      drawImg('cloud_dark_2_stack', -390 + (((t * 11.0) + 740) % 1100), -20, 370, 370, 195 / 255);
+    } else if (mode === 'wind_day') {
+      drawImg('cloud_white_1',     -380 + ((t * 28.0) % 1100),         -20, 360, 360, 1);
+      drawImg('cloud_white_2_sep', -390 + (((t * 28.0) + 550) % 1100),   0, 370, 370, 220 / 255);
     }
 
-    if (mode === 'snow') {
-      drawImg('fx_snow_slow', 12 * Math.sin(nowMs / 1600), -450 + ((t * 42) % 450), 450, 900, 1);
+    // 4. NIEVE LEJANA / NIEBLA DESCENDENTE / VIENTO
+    if (mode === 'snow_day' || mode === 'snow_night' || mode === 'sleet_day') {
+      drawImg('fx_snow_slow', 14 * Math.sin(nowMs / 1700), -450 + ((t * 38) % 450), 450, 900, 1);
     }
-    if (mode === 'fog') {
+    if (mode === 'fog_day' || mode === 'fog_night') {
       drawImg('fx_fog_descend', 18 * Math.sin(nowMs / 2600), -450 + ((t * 34) % 450), 450, 900, (185 + 45 * Math.sin(nowMs / 2800)) / 255);
+    }
+    if (mode === 'wind_day') {
+      drawImg('fx_wind_streaks', -60 + ((t * 65) % 60), 70, 570, 190, 0.85);
     }
   }
 
+  // 5. HUD + BISEL (ACTIVO Y ATENUADO EN AOD)
   const now = new Date();
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  const days = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
-  const mons = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-  const dateStr = `${days[now.getDay()]} ${mons[now.getMonth()]} ${String(now.getDate()).padStart(2, '0')}`;
+  const h24 = now.getHours();
+  const m   = now.getMinutes();
+  const h12 = (h24 % 12) || 12;
+  const hh24 = String(h24).padStart(2, '0');
+  const hh12 = String(h12).padStart(2, '0');
+  const mm   = String(m).padStart(2, '0');
+  const ampm = h24 >= 12 ? 'PM' : 'AM';
+  const dd   = String(now.getDate()).padStart(2, '0');
+  const moZ  = String(now.getMonth() + 1).padStart(2, '0');
+  const yyyy = now.getFullYear();
+  const yy   = String(yyyy).slice(-2);
+  const monsS = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  const monsF = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  // 5A. Barra de batería curva por el bisel inferior (9h = 265° -> 6h = 180° -> 3h = 95°, izquierda a derecha)
+  if (showBatt) {
+    const startRad   = (265 - 90) * Math.PI / 180;
+    const endFullRad = (95 - 90) * Math.PI / 180;
+    const endValRad  = ((265 - battPct * 1.7) - 90) * Math.PI / 180;
+    ctx.save();
+    ctx.globalAlpha = isAod ? 0.53 : 1;
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'rgba(255,255,255,0.26)';
+    ctx.beginPath();
+    ctx.arc(225, 225, 217, startRad, endFullRad, true);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#4ade80';
+    ctx.beginPath();
+    ctx.arc(225, 225, 217, startRad, endValRad, true);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // 5B. Calorías (9h–12h, centrado en -45° = 315°) y Pasos (12h–3h, centrado en +45°)
+  if (showCal) {
+    drawCurvedText('🔥 342 kcal', 193, -45, 'bold 16px Segoe UI, sans-serif', isAod ? 0.58 : 1);
+  }
+  if (showSteps) {
+    drawCurvedText('👟 6,840', 193, 45, 'bold 16px Segoe UI, sans-serif', isAod ? 0.58 : 1);
+  }
 
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
-  if (showBatt) {
-    ctx.globalAlpha = isAod ? 0.5 : 1;
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.beginPath();
-    ctx.roundRect(155, 18, 140, 28, 14);
-    ctx.fill();
+  // 5C. Hora configurable (Tamaño x Fuente x Formato, creciendo hacia arriba desde y=337)
+  if (timeStyle !== 'hidden') {
+    const sx = timeSize === 'xl' ? 1.26 : (timeSize === 'large' ? 1.14 : 1.0);
+    const sy = timeSize === 'xl' ? 1.75 : (timeSize === 'large' ? 1.35 : 1.0);
+    ctx.save();
+    ctx.globalAlpha = isAod ? 0.76 : 1;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 17px Segoe UI, sans-serif';
-    ctx.fillText('⚡ 87%', 225, 33);
+    ctx.translate(225, 337);
+    ctx.scale(sx, sy);
+    ctx.translate(-225, -337);
+    if (timeStyle === 'h24') {
+      ctx.font = `800 82px '${timeFont}', Segoe UI, sans-serif`;
+      ctx.fillText(`${hh24}:${mm}`, 225, 294);
+    } else if (timeStyle === 'h12_short') {
+      ctx.font = `800 82px '${timeFont}', Segoe UI, sans-serif`;
+      ctx.fillText(`${hh12}:${mm}`, 225, 294);
+    } else if (timeStyle === 'h12_ampm') {
+      ctx.font = `800 72px '${timeFont}', Segoe UI, sans-serif`;
+      ctx.fillText(`${hh12}:${mm}`, 196, 294);
+      ctx.font = `bold 24px '${timeFont}', Segoe UI, sans-serif`;
+      ctx.fillStyle = 'rgba(255,255,255,0.88)';
+      ctx.fillText(ampm, 342, 304);
+    } else if (timeStyle === 'text_es') {
+      const txt = formatTimeWordsEs(h24, m);
+      ctx.font = `800 36px '${timeFont}', Segoe UI, sans-serif`;
+      ctx.fillText(txt, 225, 294);
+    }
+    ctx.restore();
   }
-  if (showTime) {
-    ctx.globalAlpha = 1;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '800 82px Segoe UI, sans-serif';
-    ctx.fillText(`${hh}:${mm}`, 225, 294);
-  }
-  ctx.globalAlpha = isAod ? 0.45 : 0.68;
+
+  ctx.globalAlpha = isAod ? 0.43 : 0.68;
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(72, 348, 306, 2);
 
-  if (showDate) {
-    ctx.globalAlpha = isAod ? 0.68 : 1;
+  // 5D. Fecha configurable
+  if (dateStyle !== 'hidden') {
+    ctx.globalAlpha = isAod ? 0.65 : 1;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 23px Segoe UI, sans-serif';
-    ctx.fillText(dateStr, 179, 378);
+    let dStr = '';
+    if (dateStyle === 'short') {
+      dStr = `${dd}/${moZ}/${yyyy}`;
+      ctx.font = 'bold 22px Segoe UI, sans-serif';
+    } else if (dateStyle === 'medium') {
+      dStr = `${dd}-${monsS[now.getMonth()]}-${yy}`;
+      ctx.font = 'bold 22px Segoe UI, sans-serif';
+    } else if (dateStyle === 'long') {
+      dStr = `${now.getDate()} ${monsF[now.getMonth()]} ${yyyy}`;
+      ctx.font = 'bold 18px Segoe UI, sans-serif';
+    }
+    ctx.fillText(dStr, 176, 378);
   }
+
+  // 5E. Temperatura
   if (showTemp) {
-    ctx.globalAlpha = isAod ? 0.45 : 0.68;
+    ctx.globalAlpha = isAod ? 0.43 : 0.68;
     ctx.fillRect(296, 354, 2, 42);
-    ctx.globalAlpha = isAod ? 0.68 : 1;
+    ctx.globalAlpha = isAod ? 0.65 : 1;
+    ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 25px Segoe UI, sans-serif';
     ctx.fillText(`${curMode.temp}°`, 346, 378);
   }
   ctx.restore();
 
+  // 6. SOBRE EL CRISTAL
   if (!isAod) {
-    if (mode === 'rain' || mode === 'storm') {
+    if (mode === 'rain_day' || mode === 'rain_night' || mode === 'storm') {
       drawImg('fx_rain_slow', 0, -450 + ((t * 260) % 450), 450, 900, 1);
       drawImg('fx_rain_fast', 0, -450 + ((t * 440) % 450), 450, 900, 1);
       drawImg('fx_glass_drops_slide', 0, -450 + ((t * 22) % 450), 450, 900, 0.92);
@@ -463,18 +668,26 @@ function render(nowMs) {
         drawImg('fx_glass_fog', 0, 0, 450, 450, (75 + 75 * Math.sin(nowMs / 3500)) / 255);
       }
     }
-    if (mode === 'snow') {
-      drawImg('fx_snow_fast', -14 * Math.sin(nowMs / 1200), -450 + ((t * 78) % 450), 450, 900, 1);
+    if (mode === 'drizzle_day' || mode === 'drizzle_night') {
+      drawImg('fx_rain_slow', 0, -450 + ((t * 230) % 450), 450, 900, 185 / 255);
+      drawImg('fx_glass_drops_slide', 0, -450 + ((t * 16) % 450), 450, 900, 160 / 255);
+      if (mode === 'drizzle_day') {
+        drawImg('fx_rainbow_prism', 0, 0, 450, 450, (110 + 75 * Math.sin(nowMs / 2600)) / 255, 4 * Math.sin(nowMs / 3800));
+      }
     }
-    if (mode === 'fog') {
+    if (mode === 'snow_day' || mode === 'snow_night') {
+      drawImg('fx_snow_fast', -16 * Math.sin(nowMs / 1300), -450 + ((t * 72) % 450), 450, 900, 1);
+    }
+    if (mode === 'sleet_day') {
+      drawImg('fx_rain_slow', 0, -450 + ((t * 260) % 450), 450, 900, 170 / 255);
+      drawImg('fx_snow_fast', -16 * Math.sin(nowMs / 1300), -450 + ((t * 72) % 450), 450, 900, 1);
+    }
+    if (mode === 'fog_day' || mode === 'fog_night') {
       drawImg('fx_fog_low_fast',   -450 + ((t * 80) % 450),  195, 900, 260, (185 + 45 * Math.sin(nowMs / 2100)) / 255);
       drawImg('fx_fog_low_fast_b', -450 + ((t * 125) % 450), 235, 900, 220, (195 + 50 * Math.cos(nowMs / 1700)) / 255);
       if (showFog) {
         drawImg('fx_glass_fog', 0, 0, 450, 450, (60 + 55 * Math.sin(nowMs / 3200)) / 255);
       }
-    }
-    if (mode === 'sunny' || mode === 'partly_day') {
-      drawImg('fx_sun_glass_flare', 0, 0, 450, 450, (95 + 65 * Math.sin(nowMs / 1900)) / 255, 5 * Math.sin(nowMs / 3000));
     }
   }
 
