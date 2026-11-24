@@ -21,8 +21,8 @@ android {
         // Supported on Galaxy Watch 4, 5, 6, 7, 8 & Ultra (One UI 6 Watch / Wear OS 5+).
         minSdk = 34
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.0.3"
+        versionCode = 4
+        versionName = "0.0.4"
     }
 
     buildFeatures {

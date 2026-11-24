@@ -19,11 +19,11 @@
             displayName="@string/config_time_style"
             screenReaderText="@string/config_time_style"
             defaultValue="h24">
-            <ListOption id="h24" displayName="@string/config_time_24h" />
-            <ListOption id="h12_short" displayName="@string/config_time_12h_short" />
-            <ListOption id="h12_ampm" displayName="@string/config_time_12h_ampm" />
-            <ListOption id="text_es" displayName="@string/config_time_text" />
-            <ListOption id="hidden" displayName="@string/config_hidden" />
+            <ListOption id="h24" displayName="@string/config_time_24h" icon="@drawable/cfg_time_24h" />
+            <ListOption id="h12_short" displayName="@string/config_time_12h_short" icon="@drawable/cfg_time_12h" />
+            <ListOption id="h12_ampm" displayName="@string/config_time_12h_ampm" icon="@drawable/cfg_time_ampm" />
+            <ListOption id="text_es" displayName="@string/config_time_text" icon="@drawable/cfg_time_text" />
+            <ListOption id="hidden" displayName="@string/config_hidden" icon="@drawable/cfg_hidden" />
         </ListConfiguration>
 
         <ListConfiguration
@@ -31,10 +31,10 @@
             displayName="@string/config_time_font"
             screenReaderText="@string/config_time_font"
             defaultValue="modern">
-            <ListOption id="modern" displayName="@string/config_font_modern" />
-            <ListOption id="classic" displayName="@string/config_font_classic" />
-            <ListOption id="sport" displayName="@string/config_font_sport" />
-            <ListOption id="digital" displayName="@string/config_font_digital" />
+            <ListOption id="modern" displayName="@string/config_font_modern" icon="@drawable/cfg_font_pixel" />
+            <ListOption id="digital" displayName="@string/config_font_digital" icon="@drawable/cfg_font_nothing" />
+            <ListOption id="sport" displayName="@string/config_font_sport" icon="@drawable/cfg_font_sport" />
+            <ListOption id="classic" displayName="@string/config_font_classic" icon="@drawable/cfg_font_classic" />
         </ListConfiguration>
 
         <ListConfiguration
@@ -42,9 +42,9 @@
             displayName="@string/config_time_size"
             screenReaderText="@string/config_time_size"
             defaultValue="normal">
-            <ListOption id="normal" displayName="@string/config_size_normal" />
-            <ListOption id="large" displayName="@string/config_size_large" />
-            <ListOption id="xl" displayName="@string/config_size_xl" />
+            <ListOption id="normal" displayName="@string/config_size_normal" icon="@drawable/cfg_size_normal" />
+            <ListOption id="large" displayName="@string/config_size_large" icon="@drawable/cfg_size_large" />
+            <ListOption id="xl" displayName="@string/config_size_xl" icon="@drawable/cfg_size_xl" />
         </ListConfiguration>
 
         <ListConfiguration
@@ -52,10 +52,10 @@
             displayName="@string/config_date_style"
             screenReaderText="@string/config_date_style"
             defaultValue="medium">
-            <ListOption id="short" displayName="@string/config_date_short" />
-            <ListOption id="medium" displayName="@string/config_date_medium" />
-            <ListOption id="long" displayName="@string/config_date_long" />
-            <ListOption id="hidden" displayName="@string/config_hidden" />
+            <ListOption id="short" displayName="@string/config_date_short" icon="@drawable/cfg_date_short" />
+            <ListOption id="medium" displayName="@string/config_date_medium" icon="@drawable/cfg_date_medium" />
+            <ListOption id="long" displayName="@string/config_date_long" icon="@drawable/cfg_date_long" />
+            <ListOption id="hidden" displayName="@string/config_hidden" icon="@drawable/cfg_hidden" />
         </ListConfiguration>
 
         <BooleanConfiguration
@@ -94,14 +94,14 @@
                 <Expressions>
                     <Expression name="show_sun"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && ([WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14)]]></Expression>
                     <Expression name="show_sun_drizzle"><![CDATA[[WEATHER.IS_AVAILABLE] && [WEATHER.IS_DAY] && [WEATHER.CONDITION] == 12]]></Expression>
-                    <Expression name="moon_new"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && ((((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 1.85) || (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 27.68))]]></Expression>
-                    <Expression name="moon_waxing_crescent"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 1.85) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 5.54)]]></Expression>
-                    <Expression name="moon_first_quarter"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 5.54) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 9.23)]]></Expression>
-                    <Expression name="moon_waxing_gibbous"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 9.23) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 12.92)]]></Expression>
-                    <Expression name="moon_full"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 12.92) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 16.61)]]></Expression>
-                    <Expression name="moon_waning_gibbous"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 16.61) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 20.30)]]></Expression>
-                    <Expression name="moon_last_quarter"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 20.30) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 23.99)]]></Expression>
-                    <Expression name="moon_waning_crescent"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || ![WEATHER.IS_DAY]) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 14) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &gt;= 23.99) && (((([UTC_TIMESTAMP] - 1704974220000) / 86400000.0) % 29.530588) &lt; 27.68)]]></Expression>
+                    <Expression name="moon_new"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 0]]></Expression>
+                    <Expression name="moon_waxing_crescent"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 1]]></Expression>
+                    <Expression name="moon_first_quarter"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 2]]></Expression>
+                    <Expression name="moon_waxing_gibbous"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 3]]></Expression>
+                    <Expression name="moon_full"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 4]]></Expression>
+                    <Expression name="moon_waning_gibbous"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 5]]></Expression>
+                    <Expression name="moon_last_quarter"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 6]]></Expression>
+                    <Expression name="moon_waning_crescent"><![CDATA[(!([WEATHER.IS_AVAILABLE]) || !([WEATHER.IS_DAY])) && ([WEATHER.CONDITION] == 0 || [WEATHER.CONDITION] == 1 || [WEATHER.CONDITION] == 8 || [WEATHER.CONDITION] == 14 || [WEATHER.CONDITION] == 15) && [MOON_PHASE_TYPE] == 7]]></Expression>
                 </Expressions>
 
                 <!-- SOL + DESTELLOS LIMPIOS -->
@@ -586,426 +586,146 @@
             </BooleanOption>
         </BooleanConfiguration>
 
-        <!-- 5D. HORA CONFIGURABLE (TAMAÑO x FUENTE x FORMATO) -->
-        <ListConfiguration id="time_size">
-            <ListOption id="normal">
-                <Group name="time_scale_normal" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95" scaleX="1.0" scaleY="1.0">
-                    <Variant mode="AMBIENT" target="alpha" value="195" />
-                    <ListConfiguration id="time_font">
-                        <ListOption id="modern">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_pixel" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_pixel" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="classic">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_classic" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_classic" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="sport">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_sport" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_sport" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="digital">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_nothing" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_nothing" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                    </ListConfiguration>
-                </Group>
-            </ListOption>
-            <ListOption id="large">
-                <Group name="time_scale_large" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95" scaleX="1.14" scaleY="1.35">
-                    <Variant mode="AMBIENT" target="alpha" value="195" />
-                    <ListConfiguration id="time_font">
-                        <ListOption id="modern">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_pixel" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_pixel" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="classic">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_classic" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_classic" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="sport">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_sport" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_sport" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="digital">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_nothing" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_nothing" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                    </ListConfiguration>
-                </Group>
-            </ListOption>
-            <ListOption id="xl">
-                <Group name="time_scale_xl" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95" scaleX="1.26" scaleY="1.75">
-                    <Variant mode="AMBIENT" target="alpha" value="195" />
-                    <ListConfiguration id="time_font">
-                        <ListOption id="modern">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_pixel" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_pixel" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_pixel" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="classic">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_classic" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_classic" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_classic" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="sport">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_sport" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_sport" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_sport" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                        <ListOption id="digital">
-                            <ListConfiguration id="time_style">
-                                <ListOption id="h24">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWENTY_FOUR_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_short">
-                                    <DigitalClock x="25" y="0" width="360" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="360" height="96" align="CENTER"><Font family="font_nothing" size="82" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                </ListOption>
-                                <ListOption id="h12_ampm">
-                                    <DigitalClock x="0" y="0" width="320" height="96"><TimeText format="hh:mm" hourFormat="TWELVE_HOUR" x="0" y="0" width="320" height="96" align="END"><Font family="font_nothing" size="74" weight="EXTRA_BOLD" color="#FFFFFFFF" /></TimeText></DigitalClock>
-                                    <PartText x="326" y="42" width="76" height="36"><Text align="START"><Font family="font_nothing" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
-                                </ListOption>
-                                <ListOption id="text_es">
-                                    <Condition>
-                                        <Expressions>
-                                            <Expression name="t_noon"><![CDATA[[HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_midnight"><![CDATA[[HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
-                                            <Expression name="t_oclock"><![CDATA[[MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
-                                            <Expression name="t_quarter"><![CDATA[[MINUTE] == 15]]></Expression>
-                                            <Expression name="t_half"><![CDATA[[MINUTE] == 30]]></Expression>
-                                            <Expression name="t_quarter_to"><![CDATA[[MINUTE] == 45]]></Expression>
-                                        </Expressions>
-                                        <Compare expression="t_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="42" weight="EXTRA_BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
-                                        <Compare expression="t_midnight"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="40" weight="EXTRA_BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
-                                        <Compare expression="t_oclock"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="34" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="35" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="36" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
-                                        <Compare expression="t_quarter_to"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="31" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
-                                        <Default><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="38" weight="EXTRA_BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Default>
-                                    </Condition>
-                                </ListOption>
-                            </ListConfiguration>
-                        </ListOption>
-                    </ListConfiguration>
-                </Group>
-            </ListOption>
-        </ListConfiguration>
+        <!-- 5D. HORA CONFIGURABLE (FLAT — ZERO NESTED ListConfiguration, ZERO CRASH) -->
+        <Group name="time_root" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95">
+            <Variant mode="AMBIENT" target="alpha" value="195" />
+            <Transform target="scaleX" value="[CONFIGURATION.time_size] == &quot;xl&quot; ? 1.26 : ([CONFIGURATION.time_size] == &quot;large&quot; ? 1.14 : 1.0)" />
+            <Transform target="scaleY" value="[CONFIGURATION.time_size] == &quot;xl&quot; ? 1.75 : ([CONFIGURATION.time_size] == &quot;large&quot; ? 1.35 : 1.0)" />
+            <ListConfiguration id="time_font">
+                <ListOption id="modern">
+                    <Condition>
+                        <Expressions>
+                            <Expression name="f1_h24"><![CDATA[[CONFIGURATION.time_style] == "h24"]]></Expression>
+                            <Expression name="f1_h12"><![CDATA[[CONFIGURATION.time_style] == "h12_short"]]></Expression>
+                            <Expression name="f1_ampm"><![CDATA[[CONFIGURATION.time_style] == "h12_ampm"]]></Expression>
+                            <Expression name="f1_noon"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f1_mid"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f1_oclk"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                            <Expression name="f1_qtr"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 15]]></Expression>
+                            <Expression name="f1_half"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 30]]></Expression>
+                            <Expression name="f1_qto"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 45]]></Expression>
+                            <Expression name="f1_txt"><![CDATA[[CONFIGURATION.time_style] == "text_es"]]></Expression>
+                        </Expressions>
+                        <Compare expression="f1_h24">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_pixel" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f1_h12">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_pixel" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f1_ampm">
+                            <PartText x="0" y="0" width="316" height="96"><Text align="END"><Font family="font_pixel" size="74" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                            <PartText x="324" y="42" width="78" height="36"><Text align="START"><Font family="font_pixel" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f1_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="42" weight="BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                        <Compare expression="f1_mid"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_pixel" size="40" weight="BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                        <Compare expression="f1_oclk"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="34" weight="BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f1_qtr"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="35" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f1_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="36" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f1_qto"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="31" weight="BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f1_txt"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_pixel" size="38" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Compare>
+                    </Condition>
+                </ListOption>
+                <ListOption id="digital">
+                    <Condition>
+                        <Expressions>
+                            <Expression name="f2_h24"><![CDATA[[CONFIGURATION.time_style] == "h24"]]></Expression>
+                            <Expression name="f2_h12"><![CDATA[[CONFIGURATION.time_style] == "h12_short"]]></Expression>
+                            <Expression name="f2_ampm"><![CDATA[[CONFIGURATION.time_style] == "h12_ampm"]]></Expression>
+                            <Expression name="f2_noon"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f2_mid"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f2_oclk"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                            <Expression name="f2_qtr"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 15]]></Expression>
+                            <Expression name="f2_half"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 30]]></Expression>
+                            <Expression name="f2_qto"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 45]]></Expression>
+                            <Expression name="f2_txt"><![CDATA[[CONFIGURATION.time_style] == "text_es"]]></Expression>
+                        </Expressions>
+                        <Compare expression="f2_h24">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_nothing" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f2_h12">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_nothing" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f2_ampm">
+                            <PartText x="0" y="0" width="316" height="96"><Text align="END"><Font family="font_nothing" size="74" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                            <PartText x="324" y="42" width="78" height="36"><Text align="START"><Font family="font_nothing" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f2_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="42" weight="BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                        <Compare expression="f2_mid"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_nothing" size="40" weight="BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                        <Compare expression="f2_oclk"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="34" weight="BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f2_qtr"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="35" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f2_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="36" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f2_qto"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="31" weight="BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f2_txt"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_nothing" size="38" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Compare>
+                    </Condition>
+                </ListOption>
+                <ListOption id="sport">
+                    <Condition>
+                        <Expressions>
+                            <Expression name="f3_h24"><![CDATA[[CONFIGURATION.time_style] == "h24"]]></Expression>
+                            <Expression name="f3_h12"><![CDATA[[CONFIGURATION.time_style] == "h12_short"]]></Expression>
+                            <Expression name="f3_ampm"><![CDATA[[CONFIGURATION.time_style] == "h12_ampm"]]></Expression>
+                            <Expression name="f3_noon"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f3_mid"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f3_oclk"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                            <Expression name="f3_qtr"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 15]]></Expression>
+                            <Expression name="f3_half"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 30]]></Expression>
+                            <Expression name="f3_qto"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 45]]></Expression>
+                            <Expression name="f3_txt"><![CDATA[[CONFIGURATION.time_style] == "text_es"]]></Expression>
+                        </Expressions>
+                        <Compare expression="f3_h24">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_sport" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f3_h12">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_sport" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f3_ampm">
+                            <PartText x="0" y="0" width="316" height="96"><Text align="END"><Font family="font_sport" size="74" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                            <PartText x="324" y="42" width="78" height="36"><Text align="START"><Font family="font_sport" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f3_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="42" weight="BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                        <Compare expression="f3_mid"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_sport" size="40" weight="BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                        <Compare expression="f3_oclk"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="34" weight="BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f3_qtr"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="35" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f3_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="36" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f3_qto"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="31" weight="BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f3_txt"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_sport" size="38" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Compare>
+                    </Condition>
+                </ListOption>
+                <ListOption id="classic">
+                    <Condition>
+                        <Expressions>
+                            <Expression name="f4_h24"><![CDATA[[CONFIGURATION.time_style] == "h24"]]></Expression>
+                            <Expression name="f4_h12"><![CDATA[[CONFIGURATION.time_style] == "h12_short"]]></Expression>
+                            <Expression name="f4_ampm"><![CDATA[[CONFIGURATION.time_style] == "h12_ampm"]]></Expression>
+                            <Expression name="f4_noon"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 12 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f4_mid"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [HOUR_0_23] == 0 && [MINUTE] == 0]]></Expression>
+                            <Expression name="f4_oclk"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 0 && [HOUR_0_23] != 12 && [HOUR_0_23] != 0]]></Expression>
+                            <Expression name="f4_qtr"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 15]]></Expression>
+                            <Expression name="f4_half"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 30]]></Expression>
+                            <Expression name="f4_qto"><![CDATA[[CONFIGURATION.time_style] == "text_es" && [MINUTE] == 45]]></Expression>
+                            <Expression name="f4_txt"><![CDATA[[CONFIGURATION.time_style] == "text_es"]]></Expression>
+                        </Expressions>
+                        <Compare expression="f4_h24">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_classic" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_0_23_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f4_h12">
+                            <PartText x="25" y="0" width="360" height="96"><Text align="CENTER"><Font family="font_classic" size="82" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f4_ampm">
+                            <PartText x="0" y="0" width="316" height="96"><Text align="END"><Font family="font_classic" size="74" weight="BOLD" color="#FFFFFFFF"><Template>%s:%s<Parameter expression="[HOUR_1_12_Z]" /><Parameter expression="[MINUTE_Z]" /></Template></Font></Text></PartText>
+                            <PartText x="324" y="42" width="78" height="36"><Text align="START"><Font family="font_classic" size="24" weight="BOLD" color="#DDFFFFFF"><Template>%s<Parameter expression="[AMPM_STRING]" /></Template></Font></Text></PartText>
+                        </Compare>
+                        <Compare expression="f4_noon"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="42" weight="BOLD" color="#FFFFFFFF">Mediodía</Font></Text></PartText></Compare>
+                        <Compare expression="f4_mid"><PartText x="8" y="22" width="394" height="54"><Text align="CENTER"><Font family="font_classic" size="40" weight="BOLD" color="#FFFFFFFF">Medianoche</Font></Text></PartText></Compare>
+                        <Compare expression="f4_oclk"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="34" weight="BOLD" color="#FFFFFFFF"><Template>Las %s en punto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f4_qtr"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="35" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y cuarto<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f4_half"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="36" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y media<Parameter expression="[HOUR_1_12]" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f4_qto"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="31" weight="BOLD" color="#FFFFFFFF"><Template>Cuarto para las %s<Parameter expression="([HOUR_1_12] % 12) + 1" /></Template></Font></Text></PartText></Compare>
+                        <Compare expression="f4_txt"><PartText x="8" y="24" width="394" height="52"><Text align="CENTER"><Font family="font_classic" size="38" weight="BOLD" color="#FFFFFFFF"><Template>Las %s y %s<Parameter expression="[HOUR_1_12]" /><Parameter expression="[MINUTE]" /></Template></Font></Text></PartText></Compare>
+                    </Condition>
+                </ListOption>
+            </ListConfiguration>
+        </Group>
 
         <!-- Línea divisoria -->
         <PartDraw x="72" y="348" width="306" height="2">
@@ -1039,6 +759,7 @@
                     </Text>
                 </PartText>
             </ListOption>
+            <ListOption id="hidden" />
             <!-- Larga: 12 Diciembre 2026 -->
             <ListOption id="long">
                 <PartText x="52" y="360" width="238" height="38">
