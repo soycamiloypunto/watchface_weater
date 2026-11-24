@@ -59,16 +59,6 @@
         </ListConfiguration>
 
         <BooleanConfiguration
-            id="show_battery_bar"
-            displayName="@string/config_show_battery_bar"
-            screenReaderText="@string/config_show_battery_bar"
-            defaultValue="TRUE" />
-        <BooleanConfiguration
-            id="show_steps"
-            displayName="@string/config_show_steps"
-            screenReaderText="@string/config_show_steps"
-            defaultValue="TRUE" />
-        <BooleanConfiguration
             id="show_temperature"
             displayName="@string/config_show_temperature"
             screenReaderText="@string/config_show_temperature"
@@ -529,62 +519,117 @@
         </Group>
 
         <!-- =================================================================
-             CAPA 5: INTERFAZ HUD + BISEL (VISIBLE EN ACTIVO Y ATENUADO EN AOD)
-             Solo los elementos que el usuario deje activos se muestran en AOD.
+             CAPA 5: 3 COMPLICACIONES PERSONALIZABLES EN EL BISEL + HUD
+             Solo los elementos activos se muestran atenuados en modo AOD.
              ================================================================= -->
 
-        <!-- 5A. BARRA DE BATERÍA POR EL BISEL INFERIOR (DE LAS 9 A LAS 3 PASANDO POR LAS 6, IZQUIERDA A DERECHA) -->
-        <BooleanConfiguration id="show_battery_bar">
-            <BooleanOption id="TRUE">
-                <PartDraw x="0" y="0" width="450" height="450">
-                    <Variant mode="AMBIENT" target="alpha" value="135" />
-                    <!-- Pista de fondo gris tenue (arco inferior 9h -> 6h -> 3h) -->
-                    <Arc centerX="225" centerY="225" width="434" height="434" startAngle="265" endAngle="95" direction="COUNTER_CLOCKWISE">
-                        <Stroke color="#44FFFFFF" thickness="6" cap="ROUND" />
-                    </Arc>
-                    <!-- Progreso de batería izquierda (9h = 265°) -> abajo (6h = 180°) -> derecha (3h = 95°) -->
-                    <Arc centerX="225" centerY="225" width="434" height="434" startAngle="265" endAngle="95" direction="COUNTER_CLOCKWISE">
-                        <Transform target="endAngle" value="265 - ([BATTERY_PERCENT] * 1.7)" />
-                        <Stroke color="#FF4ADE80" thickness="6" cap="ROUND" />
-                    </Arc>
-                </PartDraw>
-            </BooleanOption>
-        </BooleanConfiguration>
-
-        <!-- 5B. CALORÍAS QUEMADAS — COMPLICATION SLOT CURVO ENTRE LAS 9 Y LAS 12 (SAMSUNG HEALTH / CUSTOM) -->
+        <!-- 5A. COMPLICACIÓN 1 — ARCO SUPERIOR IZQUIERDO (9h–12h)
+             Por defecto: Amanecer/Atardecer (el usuario puede elegir Calorías, Ritmo Cardíaco, etc.) -->
         <ComplicationSlot
             x="22" y="22" width="406" height="406"
             slotId="1"
-            displayName="@string/complication_calories"
-            supportedTypes="SHORT_TEXT"
+            displayName="@string/complication_top_left"
+            supportedTypes="SHORT_TEXT RANGED_VALUE"
             isCustomizable="TRUE">
             <BoundingArc centerX="203" centerY="203" width="406" height="406" thickness="44" startAngle="-78" endAngle="-12" direction="CLOCKWISE" />
-            <DefaultProviderPolicy defaultSystemProvider="EMPTY" defaultSystemProviderType="SHORT_TEXT" />
+            <DefaultProviderPolicy defaultSystemProvider="SUNRISE_SUNSET" defaultSystemProviderType="SHORT_TEXT" />
             <Complication type="SHORT_TEXT">
                 <PartText x="0" y="0" width="406" height="406">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
                     <TextCircular centerX="203" centerY="203" width="384" height="384" startAngle="-78" endAngle="-12" direction="CLOCKWISE" align="CENTER">
                         <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFFFFF">
-                            <Template>🔥 %s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                        </Font>
+                    </TextCircular>
+                </PartText>
+            </Complication>
+            <Complication type="RANGED_VALUE">
+                <PartText x="0" y="0" width="406" height="406">
+                    <Variant mode="AMBIENT" target="alpha" value="150" />
+                    <TextCircular centerX="203" centerY="203" width="384" height="384" startAngle="-78" endAngle="-12" direction="CLOCKWISE" align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFFFFF">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
                         </Font>
                     </TextCircular>
                 </PartText>
             </Complication>
         </ComplicationSlot>
 
-        <!-- 5C. PASOS CAMINADOS CURVOS ENTRE LAS 12 Y LAS 3 -->
-        <BooleanConfiguration id="show_steps">
-            <BooleanOption id="TRUE">
-                <PartText x="22" y="22" width="406" height="406">
+        <!-- 5B. COMPLICACIÓN 2 — ARCO SUPERIOR DERECHO (12h–3h)
+             Por defecto: Pasos Caminados (el usuario puede elegir cualquier complicación) -->
+        <ComplicationSlot
+            x="22" y="22" width="406" height="406"
+            slotId="2"
+            displayName="@string/complication_top_right"
+            supportedTypes="SHORT_TEXT RANGED_VALUE"
+            isCustomizable="TRUE">
+            <BoundingArc centerX="203" centerY="203" width="406" height="406" thickness="44" startAngle="12" endAngle="78" direction="CLOCKWISE" />
+            <DefaultProviderPolicy defaultSystemProvider="STEP_COUNT" defaultSystemProviderType="SHORT_TEXT" />
+            <Complication type="SHORT_TEXT">
+                <PartText x="0" y="0" width="406" height="406">
                     <Variant mode="AMBIENT" target="alpha" value="150" />
                     <TextCircular centerX="203" centerY="203" width="384" height="384" startAngle="12" endAngle="78" direction="CLOCKWISE" align="CENTER">
                         <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFFFFF">
-                            <Template>👟 %s<Parameter expression="[STEP_COUNT]" /></Template>
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
                         </Font>
                     </TextCircular>
                 </PartText>
-            </BooleanOption>
-        </BooleanConfiguration>
+            </Complication>
+            <Complication type="RANGED_VALUE">
+                <PartText x="0" y="0" width="406" height="406">
+                    <Variant mode="AMBIENT" target="alpha" value="150" />
+                    <TextCircular centerX="203" centerY="203" width="384" height="384" startAngle="12" endAngle="78" direction="CLOCKWISE" align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#FFFFFFFF">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                        </Font>
+                    </TextCircular>
+                </PartText>
+            </Complication>
+        </ComplicationSlot>
+
+        <!-- 5C. COMPLICACIÓN 3 — BARRA / ARCO INFERIOR (3h–9h, IZQUIERDA A DERECHA)
+             Por defecto: Batería como barra de progreso (también soporta texto corto o largo) -->
+        <ComplicationSlot
+            x="0" y="0" width="450" height="450"
+            slotId="3"
+            displayName="@string/complication_bottom_bar"
+            supportedTypes="RANGED_VALUE SHORT_TEXT LONG_TEXT"
+            isCustomizable="TRUE">
+            <BoundingArc centerX="225" centerY="225" width="440" height="440" thickness="36" startAngle="265" endAngle="95" direction="COUNTER_CLOCKWISE" />
+            <DefaultProviderPolicy defaultSystemProvider="WATCH_BATTERY" defaultSystemProviderType="RANGED_VALUE" />
+            <Complication type="RANGED_VALUE">
+                <PartDraw x="0" y="0" width="450" height="450">
+                    <Variant mode="AMBIENT" target="alpha" value="135" />
+                    <Arc centerX="225" centerY="225" width="434" height="434" startAngle="265" endAngle="95" direction="COUNTER_CLOCKWISE">
+                        <Stroke color="#44FFFFFF" thickness="6" cap="ROUND" />
+                    </Arc>
+                    <Arc centerX="225" centerY="225" width="434" height="434" startAngle="265" endAngle="95" direction="COUNTER_CLOCKWISE">
+                        <Transform target="endAngle" value="265 - (clamp(([COMPLICATION.RANGED_VALUE] - [COMPLICATION.RANGED_VALUE_MIN]) / max(1, [COMPLICATION.RANGED_VALUE_MAX] - [COMPLICATION.RANGED_VALUE_MIN]), 0, 1) * 170)" />
+                        <Stroke color="#FF4ADE80" thickness="6" cap="ROUND" />
+                    </Arc>
+                </PartDraw>
+            </Complication>
+            <Complication type="SHORT_TEXT">
+                <PartText x="12" y="12" width="426" height="426">
+                    <Variant mode="AMBIENT" target="alpha" value="150" />
+                    <TextCircular centerX="213" centerY="213" width="408" height="408" startAngle="245" endAngle="115" direction="COUNTER_CLOCKWISE" align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="16" weight="BOLD" color="#FFFFFFFF">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                        </Font>
+                    </TextCircular>
+                </PartText>
+            </Complication>
+            <Complication type="LONG_TEXT">
+                <PartText x="12" y="12" width="426" height="426">
+                    <Variant mode="AMBIENT" target="alpha" value="150" />
+                    <TextCircular centerX="213" centerY="213" width="408" height="408" startAngle="245" endAngle="115" direction="COUNTER_CLOCKWISE" align="CENTER">
+                        <Font family="SYNC_TO_DEVICE" size="15" weight="BOLD" color="#FFFFFFFF">
+                            <Template>%s<Parameter expression="[COMPLICATION.TEXT]" /></Template>
+                        </Font>
+                    </TextCircular>
+                </PartText>
+            </Complication>
+        </ComplicationSlot>
 
         <!-- 5D. HORA CONFIGURABLE (FLAT — ZERO NESTED ListConfiguration, ZERO CRASH) -->
         <Group name="time_root" x="20" y="246" width="410" height="96" pivotX="0.5" pivotY="0.95">

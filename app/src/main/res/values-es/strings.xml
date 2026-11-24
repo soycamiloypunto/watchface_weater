@@ -27,10 +27,12 @@
     <string name="config_date_medium">Media (12-DIC-26)</string>
     <string name="config_date_long">Larga (12 Diciembre 2026)</string>
 
-    <!-- Interruptores y Complicación -->
-    <string name="config_show_battery_bar">Barra de Batería (3h–9h)</string>
-    <string name="config_show_steps">Pasos Caminados (12h–3h)</string>
+    <!-- Interruptores -->
     <string name="config_show_temperature">Mostrar Temperatura</string>
     <string name="config_show_glass_fog">Efecto Vidrio Empañado</string>
-    <string name="complication_calories">Calorías / Personalizable (9h–12h)</string>
+
+    <!-- 3 Complicaciones Personalizables en el Bisel -->
+    <string name="complication_top_left">Arco Superior Izquierdo (9h–12h)</string>
+    <string name="complication_top_right">Arco Superior Derecho (12h–3h)</string>
+    <string name="complication_bottom_bar">Barra Inferior (3h–9h)</string>
 </resources>

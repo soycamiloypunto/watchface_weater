@@ -27,10 +27,12 @@
     <string name="config_date_medium">Medium (12-DEC-26)</string>
     <string name="config_date_long">Long (12 December 2026)</string>
 
-    <!-- Toggles & Complication -->
-    <string name="config_show_battery_bar">Battery Bezel Bar (3–9)</string>
-    <string name="config_show_steps">Steps Counter (12–3)</string>
+    <!-- Toggles -->
     <string name="config_show_temperature">Show Temperature</string>
     <string name="config_show_glass_fog">Fogged Glass Effect</string>
-    <string name="complication_calories">Calories / Custom (9–12)</string>
+
+    <!-- 3 Customizable Bezel Complications -->
+    <string name="complication_top_left">Top Left Arc (9–12)</string>
+    <string name="complication_top_right">Top Right Arc (12–3)</string>
+    <string name="complication_bottom_bar">Bottom Bar Arc (3–9)</string>
 </resources>
