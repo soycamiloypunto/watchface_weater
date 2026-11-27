@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Weather Land — Realistic AMOLED Watch Face for Wear OS</title>
-<meta name="description" content="Weather Land: Realistic AMOLED live weather watch face for Wear OS 5+ (Galaxy Watch 4+). Native weather animations, lunar phases, and interactive preview." />
+<meta name="description" content="Weather Land: Realistic AMOLED live weather watch face for Wear OS 5+ (Galaxy Watch 4+). Native weather animations, 8 lunar phases, 3 customizable complications, and interactive preview." />
 <style>
   @font-face { font-family: 'FontPixel';   src: url('app/src/main/res/font/font_pixel.ttf') format('truetype'); }
   @font-face { font-family: 'FontNothing'; src: url('app/src/main/res/font/font_nothing.ttf') format('truetype'); }
@@ -25,38 +25,62 @@
   }
   header {
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px;
-    max-width: 1080px; margin: 0 auto; padding: 18px 24px;
+    max-width: 1120px; margin: 0 auto; padding: 18px 24px;
     border-bottom: 1px solid var(--border);
   }
   .brand { font-weight: 800; font-size: 1.15rem; letter-spacing: 0.6px; color: #fff; text-decoration: none; }
-  nav { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; font-size: 0.92rem; }
+  nav { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 0.9rem; }
   nav a { color: var(--muted); text-decoration: none; transition: 0.15s; }
   nav a:hover { color: #fff; }
+  nav a.btn-x {
+    color: #fff; font-weight: 700; padding: 6px 12px; border-radius: 999px;
+    background: #0f1419; border: 1px solid #2f3336;
+  }
   nav a.btn-beta {
     background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: #fff; font-weight: 700; padding: 8px 16px; border-radius: 999px;
     border: 1px solid #60a5fa; box-shadow: 0 4px 16px rgba(59,130,246,0.35);
   }
-  nav a.btn-beta:hover {
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
-    transform: translateY(-1px);
+  nav a.btn-beta:hover { background: linear-gradient(135deg, #1d4ed8, #2563eb); transform: translateY(-1px); }
+  #langSelect {
+    background: #141b2d; color: #fff; border: 1px solid #334155;
+    border-radius: 999px; padding: 6px 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
   }
 
   main { max-width: 1080px; margin: 0 auto; padding: 36px 24px 72px; }
-  .hero {
-    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px;
-  }
+  .hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
   .hero h1 { margin: 0; font-size: clamp(1.9rem, 4vw, 2.75rem); font-weight: 800; letter-spacing: 0.4px; }
-  .hero p { margin: 0; max-width: 680px; color: var(--muted); font-size: 1.02rem; }
+  .hero p { margin: 0; max-width: 700px; color: var(--muted); font-size: 1.02rem; }
   .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .badge {
     background: #141b2d; border: 1px solid #26324d; color: #cbd5e1;
     padding: 5px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
   }
 
-  .simulator {
-    margin-top: 12px; display: flex; flex-direction: column; align-items: center; gap: 20px;
+  .beta-box {
+    width: 100%; max-width: 780px; margin-top: 6px;
+    background: linear-gradient(145deg, #11192e, #0c1222);
+    border: 1px solid #283a60; border-radius: 18px; padding: 20px 22px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
   }
+  .beta-box h2 { margin: 0; font-size: 1.15rem; color: #fff; }
+  .beta-box p { margin: 0; font-size: 0.88rem; color: #cbd5e1; max-width: 640px; }
+  .beta-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 999px; font-weight: 700; font-size: 0.92rem;
+    text-decoration: none; transition: 0.15s;
+  }
+  .cta-step1 { background: #17233d; color: #e2e8f0; border: 1px solid #3b82f6; }
+  .cta-step1:hover { background: #1e3156; color: #fff; transform: translateY(-1px); }
+  .cta-step2 {
+    background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff;
+    border: 1px solid #4ade80; box-shadow: 0 6px 20px rgba(34,197,94,0.32);
+  }
+  .cta-step2:hover { background: linear-gradient(135deg, #15803d, #16a34a); transform: translateY(-1px); }
+
+  .simulator { margin-top: 12px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
   .watch-bezel {
     width: min(486px, 92vw); height: min(486px, 92vw); border-radius: 50%;
     background: radial-gradient(circle at 30% 25%, #3a3f4b, #14171f 70%, #090a0e);
@@ -68,37 +92,32 @@
     width: 100%; height: 100%; border-radius: 50%; background: #000;
     box-shadow: inset 0 0 24px rgba(255,255,255,0.06);
   }
-  .controls {
-    display: flex; flex-wrap: wrap; gap: 8px; max-width: 780px; justify-content: center;
-  }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; max-width: 860px; justify-content: center; }
   button {
     background: #151b2b; color: #e2e8f0; border: 1px solid #2c3852;
-    padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: 0.88rem; transition: 0.15s;
+    padding: 8px 14px; border-radius: 999px; cursor: pointer; font-size: 0.85rem; transition: 0.15s;
   }
   button:hover { background: #212c46; }
   button.active { background: var(--accent); border-color: #60a5fa; color: #fff; font-weight: 600; }
   .toggles {
-    display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
-    font-size: 0.9rem; color: #cbd5e1; background: var(--card);
-    border: 1px solid var(--border); padding: 12px 20px; border-radius: 14px;
+    display: flex; flex-wrap: wrap; gap: 12px 16px; justify-content: center; align-items: center;
+    font-size: 0.88rem; color: #cbd5e1; background: var(--card);
+    border: 1px solid var(--border); padding: 14px 20px; border-radius: 14px; max-width: 900px;
   }
   .toggles label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .toggles select {
+    background: #1e2638; color: #fff; border: 1px solid #3b4b6b;
+    border-radius: 8px; padding: 4px 8px; font-size: 0.84rem;
+  }
 
   section { margin-top: 64px; }
   h2 { font-size: 1.55rem; margin: 0 0 16px; color: #fff; }
-  .grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;
-  }
-  .card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 20px;
-  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
   .card h3 { margin: 0 0 8px; font-size: 1.05rem; color: #fff; }
   .card p { margin: 0; font-size: 0.9rem; color: var(--muted); }
 
-  .gallery {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;
-  }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
   .gallery img {
     width: 100%; aspect-ratio: 1 / 1; border-radius: 50%; object-fit: cover;
     border: 2px solid #232d42; background: #000;
@@ -108,33 +127,8 @@
     background: var(--card); border: 1px solid var(--border);
     border-radius: 16px; padding: 28px; color: #cbd5e1; font-size: 0.95rem;
   }
-  .privacy-box h3 { color: #fff; margin-top: 20px; margin-bottom: 6px; font-size: 1.05rem; }
+  .privacy-box h3 { color: #fff; margin-top: 18px; margin-bottom: 6px; font-size: 1.05rem; }
   .privacy-box a { color: #60a5fa; }
-
-  .beta-box {
-    width: 100%; max-width: 760px; margin-top: 6px;
-    background: linear-gradient(145deg, #11192e, #0c1222);
-    border: 1px solid #283a60; border-radius: 18px; padding: 20px 22px;
-    display: flex; flex-direction: column; align-items: center; gap: 14px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-  }
-  .beta-box h2 { margin: 0; font-size: 1.15rem; color: #fff; }
-  .beta-box p { margin: 0; font-size: 0.88rem; color: #cbd5e1; max-width: 620px; }
-  .beta-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-  .cta-btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 11px 20px; border-radius: 999px; font-weight: 700; font-size: 0.92rem;
-    text-decoration: none; transition: 0.15s;
-  }
-  .cta-step1 {
-    background: #17233d; color: #e2e8f0; border: 1px solid #3b82f6;
-  }
-  .cta-step1:hover { background: #1e3156; color: #fff; transform: translateY(-1px); }
-  .cta-step2 {
-    background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff;
-    border: 1px solid #4ade80; box-shadow: 0 6px 20px rgba(34,197,94,0.32);
-  }
-  .cta-step2:hover { background: linear-gradient(135deg, #15803d, #16a34a); transform: translateY(-1px); }
 
   footer {
     text-align: center; padding: 28px 24px; color: var(--muted);
@@ -147,13 +141,21 @@
   <header>
     <a class="brand" href="#">⌚ WEATHER LAND</a>
     <nav>
-      <a href="#preview">Simulador</a>
-      <a href="#features">Características</a>
-      <a href="#gallery">Galería</a>
-      <a href="#privacy">Privacidad</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="https://x.com/criscamilotv" target="_blank" rel="noopener" style="color:#fff;font-weight:700;padding:6px 12px;border-radius:999px;background:#0f1419;border:1px solid #2f3336;">𝕏 @criscamilotv</a>
-      <a class="btn-beta" href="#beta-test">🚀 Descargar Beta</a>
+      <a href="#preview" data-i18n="nav_sim">Simulador</a>
+      <a href="#features" data-i18n="nav_feat">Características</a>
+      <a href="#gallery" data-i18n="nav_gal">Galería</a>
+      <a href="#privacy" data-i18n="nav_priv">Privacidad</a>
+      <a href="privacy.html" data-i18n="nav_policy">Privacy Policy</a>
+      <a class="btn-x" href="https://x.com/criscamilotv" target="_blank" rel="noopener">𝕏 @criscamilotv</a>
+      <a class="btn-beta" href="#beta-test" data-i18n="nav_beta">🚀 Descargar Beta</a>
+      <select id="langSelect" aria-label="Language">
+        <option value="es">🌐 Español</option>
+        <option value="en">🌐 English</option>
+        <option value="pl">🌐 Polski</option>
+        <option value="pt">🌐 Português</option>
+        <option value="it">🌐 Italiano</option>
+        <option value="fr">🌐 Français</option>
+      </select>
     </nav>
   </header>
 
@@ -166,23 +168,23 @@
         <span class="badge">Galaxy Watch 4 / 5 / 6 / 7 / Ultra</span>
       </div>
       <h1>Weather Land</h1>
-      <p>
+      <p data-i18n="hero_desc">
         Carátula fotorrealista optimizada para pantallas AMOLED en Wear OS.
-        Clima en vivo nativo del sistema con sol con llamaradas, fases lunares reales,
-        nubes volumétricas, tormentas con rayos, lluvia sobre el cristal, nieve y niebla.
+        Clima en vivo nativo del sistema con sol con destellos, 8 fases lunares reales,
+        nubes volumétricas día/noche, tormentas con rayos, lluvia sobre el cristal, copos de nieve y niebla.
       </p>
 
       <div class="beta-box" id="beta-test">
-        <h2>🧪 ¿Quieres probarla gratis en tu reloj Wear OS?</h2>
-        <p>
+        <h2 data-i18n="beta_title">🧪 ¿Quieres probarla gratis en tu reloj Wear OS?</h2>
+        <p data-i18n="beta_desc">
           Inscríbete en la prueba cerrada en 2 pasos usando la misma cuenta de Google de tu reloj:
           primero únete al grupo de testers y luego activa la descarga en Google Play.
         </p>
         <div class="beta-actions">
-          <a class="cta-btn cta-step1" href="https://groups.google.com/g/watchfaces-wearos" target="_blank" rel="noopener">
+          <a class="cta-btn cta-step1" href="https://groups.google.com/g/watchfaces-wearos" target="_blank" rel="noopener" data-i18n="beta_step1">
             👥 1. Unirse al Grupo (watchfaces-wearos)
           </a>
-          <a class="cta-btn cta-step2" href="https://play.google.com/apps/testing/com.soycamiloypunto.weatherland" target="_blank" rel="noopener">
+          <a class="cta-btn cta-step2" href="https://play.google.com/apps/testing/com.soycamiloypunto.weatherland" target="_blank" rel="noopener" data-i18n="beta_step2">
             📲 2. Inscribirse y Descargar en Play Store
           </a>
         </div>
@@ -194,116 +196,237 @@
         </div>
         <div class="controls" id="modes"></div>
         <div class="toggles">
-          <label>Hora:
-            <select id="sTime" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
+          <label><span data-i18n="lbl_time">Hora:</span>
+            <select id="sTime">
               <option value="h24" selected>24h (14:00)</option>
               <option value="h12_short">12h (02:00)</option>
               <option value="h12_ampm">12h AM/PM</option>
-              <option value="text_es">Texto (Mediodía / y cuarto)</option>
-              <option value="hidden">Oculta</option>
+              <option value="text_es">Texto</option>
+              <option value="hidden">OFF</option>
             </select>
           </label>
-          <label>Fuente:
-            <select id="sFont" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
-              <option value="FontPixel" selected>Pixel (Moderna)</option>
-              <option value="FontNothing">Nothing (Puntos)</option>
-              <option value="FontSport">Deportiva (Condensada)</option>
-              <option value="FontClassic">Clásica (Serif)</option>
+          <label><span data-i18n="lbl_font">Fuente:</span>
+            <select id="sFont">
+              <option value="FontPixel" selected>Pixel</option>
+              <option value="FontNothing">Nothing (Dot)</option>
+              <option value="FontSport">Sport</option>
+              <option value="FontClassic">Classic</option>
             </select>
           </label>
-          <label>Tamaño Hora:
-            <select id="sSize" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
-              <option value="normal" selected>Normal (1x)</option>
-              <option value="large">Grande (1.35x)</option>
-              <option value="xl">Gigante (1.75x)</option>
+          <label><span data-i18n="lbl_size">Tamaño:</span>
+            <select id="sSize">
+              <option value="normal" selected>1x</option>
+              <option value="large">1.35x</option>
+              <option value="xl">1.75x</option>
             </select>
           </label>
-          <label>Fecha:
-            <select id="sDate" style="background:#1e2638;color:#fff;border:1px solid #3b4b6b;border-radius:8px;padding:4px 8px;font-size:0.84rem;">
+          <label><span data-i18n="lbl_date">Fecha:</span>
+            <select id="sDate">
               <option value="short">12/12/2026</option>
               <option value="medium" selected>12-DIC-26</option>
               <option value="long">12 Diciembre 2026</option>
-              <option value="hidden">Oculta</option>
+              <option value="hidden">OFF</option>
             </select>
           </label>
-          <label><input type="checkbox" id="tBatt" checked /> Barra Batería (3h–9h)</label>
+          <label><input type="checkbox" id="tBatt" checked /> <span data-i18n="lbl_batt">Barra (3h–9h)</span></label>
           <label><input type="range" id="rBatt" min="5" max="100" value="82" style="width:70px" /> <span id="battVal">82%</span></label>
-          <label><input type="checkbox" id="tCal" checked /> Calorías (9h–12h)</label>
-          <label><input type="checkbox" id="tSteps" checked /> Pasos (12h–3h)</label>
-          <label><input type="checkbox" id="tTemp" checked /> Temperatura</label>
-          <label><input type="checkbox" id="tFog" checked /> Vidrio empañado</label>
-          <label><input type="checkbox" id="tAod" /> 🌙 Modo AOD</label>
+          <label><input type="checkbox" id="tCal" checked /> <span data-i18n="lbl_c1">Complicación 1</span></label>
+          <label><input type="checkbox" id="tSteps" checked /> <span data-i18n="lbl_c2">Complicación 2</span></label>
+          <label><input type="checkbox" id="tTemp" checked /> <span data-i18n="lbl_temp">Temp</span></label>
+          <label><input type="checkbox" id="tFog" checked /> <span data-i18n="lbl_fog">Empañado</span></label>
+          <label><input type="checkbox" id="tAod" /> 🌙 AOD</label>
         </div>
       </div>
     </section>
 
     <section id="features">
-      <h2>Características principales</h2>
+      <h2 data-i18n="feat_title">Características principales</h2>
       <div class="grid">
         <div class="card">
-          <h3>☀️ Clima nativo sin API Keys</h3>
-          <p>Utiliza los proveedores nativos de Wear OS 5+ (<code>[WEATHER.*]</code>). Funciona al instante sin crear cuentas ni configurar llaves externas.</p>
+          <h3 data-i18n="f1_t">☀️ Clima nativo + 8 Fases Lunares</h3>
+          <p data-i18n="f1_d">Usa los proveedores nativos de Wear OS 5+ sin API keys externas. Nubes día/noche, prisma arcoíris en llovizna y las 8 fases reales de la luna.</p>
         </div>
         <div class="card">
-          <h3>🖤 Fondo Negro Puro AMOLED</h3>
-          <p>Diseñada sobre <code>#000000</code> para resaltar el efecto realista sobre el cristal del reloj y maximizar el ahorro de batería OLED.</p>
+          <h3 data-i18n="f2_t">🖤 Fondo Negro Puro AMOLED + AOD</h3>
+          <p data-i18n="f2_d">Diseñada sobre #000000 para máximo contraste y ahorro OLED. En modo AOD apaga las animaciones y deja solo tus datos activos atenuados.</p>
         </div>
         <div class="card">
-          <h3>🌧️ Efectos sobre el cristal</h3>
-          <p>Lluvia en doble plano, gotas resbalando sobre el vidrio, condensación sutil que respira y relámpagos cayendo desde nubes de tormenta.</p>
+          <h3 data-i18n="f3_t">🔤 Fuentes Pixel, Nothing y Tamaños</h3>
+          <p data-i18n="f3_d">Personaliza la hora con 4 fuentes (Pixel, Nothing Dot, Sport, Clásica), 3 tamaños hasta 1.75x y múltiples formatos de hora y fecha.</p>
         </div>
         <div class="card">
-          <h3>⚙️ 5 Ajustes desde el reloj</h3>
-          <p>Activa o desactiva Hora, Fecha completa, Batería, Temperatura y efecto de Vidrio Empañado directamente en la personalización del reloj.</p>
+          <h3 data-i18n="f4_t">⚙️ 3 Complicaciones en el Bisel</h3>
+          <p data-i18n="f4_d">Elige tus widgets favoritos (Calorías, Pasos, Batería, Ritmo Cardíaco, etc.) en los 3 arcos curvos personalizables del reloj.</p>
         </div>
       </div>
     </section>
 
     <section id="gallery">
-      <h2>Capturas de pantalla (Wear OS)</h2>
+      <h2 data-i18n="gal_title">Capturas de pantalla (Wear OS)</h2>
       <div class="gallery">
-        <img src="playstore_assets/01_soleado.png" alt="Soleado" loading="lazy" />
-        <img src="playstore_assets/02_seminublado_dia.png" alt="Seminublado" loading="lazy" />
-        <img src="playstore_assets/04_lluvia_empanado.png" alt="Lluvia y vidrio empañado" loading="lazy" />
-        <img src="playstore_assets/05_tormenta_rayos.png" alt="Tormenta con rayos" loading="lazy" />
-        <img src="playstore_assets/06_luna_llena.png" alt="Luna llena" loading="lazy" />
-        <img src="playstore_assets/07_nieve.png" alt="Nieve" loading="lazy" />
+        <img src="playstore_assets/01_soleado.png" alt="Sunny" loading="lazy" />
+        <img src="playstore_assets/02_seminublado_dia.png" alt="Partly Cloudy" loading="lazy" />
+        <img src="playstore_assets/04_lluvia_empanado.png" alt="Rain" loading="lazy" />
+        <img src="playstore_assets/05_tormenta_rayos.png" alt="Storm" loading="lazy" />
+        <img src="playstore_assets/06_luna_llena.png" alt="Full Moon" loading="lazy" />
+        <img src="playstore_assets/07_nieve.png" alt="Snow" loading="lazy" />
       </div>
     </section>
 
     <section id="privacy">
-      <h2>Política de Privacidad / Privacy Policy</h2>
+      <h2 data-i18n="priv_title">Política de Privacidad / Privacy Policy</h2>
       <div class="privacy-box">
-        <p><strong>Última actualización / Last updated:</strong> 20 de noviembre de 2026 — <strong>App:</strong> Weather Land (<code>com.soycamiloypunto.weatherland</code>)</p>
-        <p>También disponible en página dedicada para Google Play Console: <a href="privacy.html">privacy.html</a></p>
-
-        <h3>Español</h3>
-        <p>
-          <strong>Weather Land</strong> es una carátula para Wear OS desarrollada bajo el estándar oficial <em>Watch Face Format v2</em> sin código ejecutable.
-          Esta aplicación <strong>no recopila, no almacena, no procesa ni comparte ningún dato personal, ubicación ni información de uso</strong> con el desarrollador ni con terceros.
-          La información del clima, hora, fecha y porcentaje de batería se lee localmente desde los proveedores del sistema Wear OS únicamente para mostrarse en la pantalla del reloj.
+        <p><strong data-i18n="priv_app">App:</strong> Weather Land (<code>com.soycamiloypunto.weatherland</code>) · <a href="privacy.html">privacy.html</a></p>
+        <p data-i18n="priv_body">
+          Weather Land es una carátula Wear OS desarrollada con Watch Face Format v2 (sin código ejecutable).
+          No recopila, almacena ni comparte ningún dato personal ni ubicación. Toda la información del clima, hora, fecha y complicaciones se lee localmente desde Wear OS.
         </p>
-
-        <h3>English</h3>
+        <h3 data-i18n="priv_contact">Contacto</h3>
         <p>
-          <strong>Weather Land</strong> is a Wear OS watch face built with the official <em>Watch Face Format v2</em> (resource-only, no executable code).
-          This application <strong>does not collect, store, transmit, or share any personal data, location data, or analytics</strong> with the developer or any third party.
-          Weather conditions, temperature, time, date, and battery level are read strictly locally from native Wear OS system data sources solely to render the watch face on your device.
+          <strong>soycamiloypunto</strong> ·
+          X: <a href="https://x.com/criscamilotv" target="_blank" rel="noopener">𝕏 @criscamilotv</a> ·
+          GitHub: <a href="https://github.com/soycamiloypunto/watchface_weater" target="_blank" rel="noopener">github.com/soycamiloypunto/watchface_weater</a>
         </p>
-
-        <h3>Contacto / Contact</h3>
-        <p>Desarrollador: <strong>soycamiloypunto</strong> · X: <a href="https://x.com/criscamilotv" target="_blank" rel="noopener">𝕏 @criscamilotv</a> · GitHub: <a href="https://github.com/soycamiloypunto/watchface_weater" target="_blank" rel="noopener">github.com/soycamiloypunto/watchface_weater</a></p>
       </div>
     </section>
   </main>
 
   <footer>
-    Weather Land — Wear OS Watch Face Format v2 · <a href="https://x.com/criscamilotv" target="_blank" rel="noopener">𝕏 @criscamilotv</a> · <a href="privacy.html">Política de Privacidad</a> · <a href="https://github.com/soycamiloypunto/watchface_weater" target="_blank" rel="noopener">GitHub</a>
+    Weather Land — Wear OS Watch Face Format v2 · <a href="https://x.com/criscamilotv" target="_blank" rel="noopener">𝕏 @criscamilotv</a> · <a href="privacy.html" data-i18n="nav_policy">Privacy Policy</a> · <a href="https://github.com/soycamiloypunto/watchface_weater" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
 <script>
+const I18N = {
+  es: {
+    nav_sim: 'Simulador', nav_feat: 'Características', nav_gal: 'Galería', nav_priv: 'Privacidad', nav_policy: 'Política de Privacidad', nav_beta: '🚀 Descargar Beta',
+    hero_desc: 'Carátula fotorrealista optimizada para pantallas AMOLED en Wear OS. Clima en vivo nativo del sistema con sol con destellos, 8 fases lunares reales, nubes volumétricas día/noche, tormentas con rayos, lluvia sobre el cristal, copos de nieve y niebla.',
+    beta_title: '🧪 ¿Quieres probarla gratis en tu reloj Wear OS?',
+    beta_desc: 'Inscríbete en la prueba cerrada en 2 pasos usando la misma cuenta de Google de tu reloj: primero únete al grupo de testers y luego activa la descarga en Google Play.',
+    beta_step1: '👥 1. Unirse al Grupo (watchfaces-wearos)', beta_step2: '📲 2. Inscribirse y Descargar en Play Store',
+    lbl_time: 'Hora:', lbl_font: 'Fuente:', lbl_size: 'Tamaño:', lbl_date: 'Fecha:', lbl_batt: 'Barra (3h–9h)', lbl_c1: 'Complicación 1', lbl_c2: 'Complicación 2', lbl_temp: 'Temp', lbl_fog: 'Empañado',
+    feat_title: 'Características principales',
+    f1_t: '☀️ Clima nativo + 8 Fases Lunares', f1_d: 'Usa los proveedores nativos de Wear OS 5+ sin API keys externas. Nubes día/noche, prisma arcoíris en llovizna y las 8 fases reales de la luna.',
+    f2_t: '🖤 Fondo Negro Puro AMOLED + AOD', f2_d: 'Diseñada sobre #000000 para máximo contraste y ahorro OLED. En modo AOD apaga las animaciones y deja solo tus datos activos atenuados.',
+    f3_t: '🔤 Fuentes Pixel, Nothing y Tamaños', f3_d: 'Personaliza la hora con 4 fuentes (Pixel, Nothing Dot, Sport, Clásica), 3 tamaños hasta 1.75x y múltiples formatos de hora y fecha.',
+    f4_t: '⚙️ 3 Complicaciones en el Bisel', f4_d: 'Elige tus widgets favoritos (Calorías, Pasos, Batería, Ritmo Cardíaco, etc.) en los 3 arcos curvos personalizables del reloj.',
+    gal_title: 'Capturas de pantalla (Wear OS)', priv_title: 'Política de Privacidad', priv_app: 'Aplicación:',
+    priv_body: 'Weather Land es una carátula Wear OS desarrollada con Watch Face Format v2 (sin código ejecutable). No recopila, almacena ni comparte ningún dato personal ni ubicación. Toda la información del clima, hora, fecha y complicaciones se lee localmente desde Wear OS.',
+    priv_contact: 'Contacto',
+    monsS: ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'],
+    monsF: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+  },
+  en: {
+    nav_sim: 'Simulator', nav_feat: 'Features', nav_gal: 'Gallery', nav_priv: 'Privacy', nav_policy: 'Privacy Policy', nav_beta: '🚀 Get Beta',
+    hero_desc: 'Photorealistic AMOLED live weather watch face for Wear OS 5+. Native system weather with shimmering sun, 8 real lunar phases, day/night clouds, lightning storms, rain on watch glass, real snowflakes, and rolling mist.',
+    beta_title: '🧪 Want to test it free on your Wear OS watch?',
+    beta_desc: 'Join the closed beta in 2 quick steps using the same Google account as your watch: join the Google tester group first, then opt in on Google Play.',
+    beta_step1: '👥 1. Join Tester Group (watchfaces-wearos)', beta_step2: '📲 2. Opt-in & Download on Play Store',
+    lbl_time: 'Time:', lbl_font: 'Font:', lbl_size: 'Size:', lbl_date: 'Date:', lbl_batt: 'Bar (3–9)', lbl_c1: 'Complication 1', lbl_c2: 'Complication 2', lbl_temp: 'Temp', lbl_fog: 'Glass Fog',
+    feat_title: 'Key Features',
+    f1_t: '☀️ Native Weather + 8 Moon Phases', f1_d: 'Powered by native Wear OS 5+ weather with zero API keys. Day/night clouds, subtle rainbow prism in daytime drizzle, and all 8 astronomical moon phases.',
+    f2_t: '🖤 True Black AMOLED + Smart AOD', f2_d: 'Built on pure #000000 for OLED battery life. Always-On Display turns off animations and keeps only your active metrics dimmed.',
+    f3_t: '🔤 Pixel & Nothing Fonts + Sizes', f3_d: 'Customize the clock with 4 fonts (Pixel, Nothing Dot Matrix, Sport, Classic), 3 sizes up to 1.75x, and multiple time/date formats.',
+    f4_t: '⚙️ 3 Customizable Bezel Complications', f4_d: 'Assign your favorite widgets (Calories, Steps, Battery, Heart Rate, Sunrise, etc.) across 3 curved bezel slots.',
+    gal_title: 'Wear OS Screenshots', priv_title: 'Privacy Policy', priv_app: 'App:',
+    priv_body: 'Weather Land is a Wear OS watch face built with Watch Face Format v2 (resource-only, no executable code). It does not collect, store, or share any personal data or location. All weather, time, date, and complication data is read locally from Wear OS.',
+    priv_contact: 'Contact',
+    monsS: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'],
+    monsF: ['January','February','March','April','May','June','July','August','September','October','November','December']
+  },
+  pl: {
+    nav_sim: 'Symulator', nav_feat: 'Funkcje', nav_gal: 'Galeria', nav_priv: 'Prywatność', nav_policy: 'Polityka Prywatności', nav_beta: '🚀 Pobierz Betę',
+    hero_desc: 'Fotorealistyczna tarcza pogodowa AMOLED dla Wear OS 5+. Natywna pogoda na żywo ze słońcem, 8 fazami księżyca, chmurami dzień/noc, burzą z piorunami, deszczem na szkle, płatkami śniegu i mgłą.',
+    beta_title: '🧪 Chcesz przetestować za darmo na zegarku Wear OS?',
+    beta_desc: 'Dołącz do zamkniętych testów w 2 krokach tym samym kontem Google co na zegarku: najpierw dołącz do grupy testerów, a potem pobierz w Google Play.',
+    beta_step1: '👥 1. Dołącz do grupy (watchfaces-wearos)', beta_step2: '📲 2. Zapisz się i pobierz w Play Store',
+    lbl_time: 'Czas:', lbl_font: 'Czcionka:', lbl_size: 'Rozmiar:', lbl_date: 'Data:', lbl_batt: 'Pasek (3–9)', lbl_c1: 'Komplikacja 1', lbl_c2: 'Komplikacja 2', lbl_temp: 'Temp', lbl_fog: 'Zaparowanie',
+    feat_title: 'Główne funkcje',
+    f1_t: '☀️ Natywna pogoda + 8 faz księżyca', f1_d: 'Działa z natywną pogodą Wear OS 5+ bez kluczy API. Chmury dzień/noc, delikatny pryzmat tęczy w mżawce i 8 prawdziwych faz księżyca.',
+    f2_t: '🖤 Czysta czerń AMOLED + AOD', f2_d: 'Zaprojektowana na #000000 dla oszczędności baterii OLED. Tryb AOD wyłącza animacje i zostawia tylko przyciemnione dane.',
+    f3_t: '🔤 Czcionki Pixel, Nothing i rozmiary', f3_d: 'Dostosuj godzinę: 4 czcionki (Pixel, Nothing Kropki, Sportowa, Klasyczna), 3 rozmiary do 1.75x oraz formaty godziny i daty.',
+    f4_t: '⚙️ 3 Komplikacje na pierścieniu', f4_d: 'Wybierz ulubione widżety (Kalorie, Kroki, Bateria, Tętno itp.) w 3 zakrzywionych slotach na krawędzi tarczy.',
+    gal_title: 'Zrzuty ekranu (Wear OS)', priv_title: 'Polityka Prywatności', priv_app: 'Aplikacja:',
+    priv_body: 'Weather Land to tarcza Wear OS stworzona w Watch Face Format v2 (bez kodu wykonywalnego). Nie zbiera, nie przechowuje ani nie udostępnia żadnych danych osobowych ani lokalizacji.',
+    priv_contact: 'Kontakt',
+    monsS: ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU'],
+    monsF: ['Stycznia','Lutego','Marca','Kwietnia','Maja','Czerwca','Lipca','Sierpnia','Września','Października','Listopada','Grudnia']
+  },
+  pt: {
+    nav_sim: 'Simulador', nav_feat: 'Recursos', nav_gal: 'Galeria', nav_priv: 'Privacidade', nav_policy: 'Política de Privacidade', nav_beta: '🚀 Baixar Beta',
+    hero_desc: 'Mostrador fotorrealista AMOLED de clima ao vivo para Wear OS 5+. Clima nativo do sistema com sol brilhante, 8 fases reais da lua, nuvens dia/noite, tempestades com raios, chuva no vidro, neve e névoa.',
+    beta_title: '🧪 Quer testar grátis no seu relógio Wear OS?',
+    beta_desc: 'Inscreva-se no teste fechado em 2 passos usando a mesma conta Google do relógio: entre no grupo de testadores e depois ative o download no Google Play.',
+    beta_step1: '👥 1. Entrar no Grupo (watchfaces-wearos)', beta_step2: '📲 2. Inscrever-se e Baixar na Play Store',
+    lbl_time: 'Hora:', lbl_font: 'Fonte:', lbl_size: 'Tamanho:', lbl_date: 'Data:', lbl_batt: 'Barra (3h–9h)', lbl_c1: 'Complicação 1', lbl_c2: 'Complicação 2', lbl_temp: 'Temp', lbl_fog: 'Embaçado',
+    feat_title: 'Principais recursos',
+    f1_t: '☀️ Clima nativo + 8 Fases da Lua', f1_d: 'Usa os provedores nativos do Wear OS 5+ sem chaves de API. Nuvens dia/noite, prisma arco-íris na garoa e as 8 fases lunares reais.',
+    f2_t: '🖤 Preto Puro AMOLED + AOD', f2_d: 'Feita sobre #000000 para máximo contraste e economia OLED. No modo AOD desativa animações e mantém apenas seus dados ativos.',
+    f3_t: '🔤 Fontes Pixel, Nothing e Tamanhos', f3_d: 'Personalize o relógio com 4 fontes (Pixel, Nothing Pontos, Esportiva, Clássica), 3 tamanhos até 1.75x e vários formatos de hora e data.',
+    f4_t: '⚙️ 3 Complicações na Borda', f4_d: 'Escolha seus widgets favoritos (Calorias, Passos, Bateria, Batimentos, etc.) nos 3 arcos curvos personalizáveis.',
+    gal_title: 'Capturas de tela (Wear OS)', priv_title: 'Política de Privacidade', priv_app: 'App:',
+    priv_body: 'Weather Land é um mostrador Wear OS feito com Watch Face Format v2 (sem código executável). Não coleta, armazena nem compartilha dados pessoais ou localização.',
+    priv_contact: 'Contato',
+    monsS: ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'],
+    monsF: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+  },
+  it: {
+    nav_sim: 'Simulatore', nav_feat: 'Funzioni', nav_gal: 'Galleria', nav_priv: 'Privacy', nav_policy: 'Informativa Privacy', nav_beta: '🚀 Scarica Beta',
+    hero_desc: 'Quadrante fotorealistico AMOLED meteo in tempo reale per Wear OS 5+. Meteo nativo con sole luminoso, 8 fasi lunari reali, nuvole giorno/notte, temporali con fulmini, pioggia sul vetro, neve e nebbia.',
+    beta_title: '🧪 Vuoi provarlo gratis sul tuo smartwatch Wear OS?',
+    beta_desc: 'Iscriviti al test chiuso in 2 passaggi con lo stesso account Google dell\'orologio: unisciti prima al gruppo tester e poi scarica da Google Play.',
+    beta_step1: '👥 1. Unisciti al Gruppo (watchfaces-wearos)', beta_step2: '📲 2. Iscriviti e Scarica su Play Store',
+    lbl_time: 'Ora:', lbl_font: 'Carattere:', lbl_size: 'Dimensione:', lbl_date: 'Data:', lbl_batt: 'Barra (3–9)', lbl_c1: 'Complicazione 1', lbl_c2: 'Complicazione 2', lbl_temp: 'Temp', lbl_fog: 'Appannato',
+    feat_title: 'Caratteristiche principali',
+    f1_t: '☀️ Meteo nativo + 8 Fasi Lunari', f1_d: 'Utilizza i dati meteo nativi di Wear OS 5+ senza API esterne. Nuvole giorno/notte, prisma arcobaleno con pioggerella e 8 fasi lunari reali.',
+    f2_t: '🖤 Nero Puro AMOLED + AOD', f2_d: 'Progettato su #000000 per contrasto massimo e risparmio OLED. In modalità AOD spegne le animazioni lasciando solo i dati attivi.',
+    f3_t: '🔤 Caratteri Pixel, Nothing e Dimensioni', f3_d: 'Personalizza l\'ora con 4 caratteri (Pixel, Nothing Punti, Sportivo, Classico), 3 dimensioni fino a 1.75x e vari formati di ora e data.',
+    f4_t: '⚙️ 3 Complicazioni sulla Ghiera', f4_d: 'Scegli i tuoi widget preferiti (Calorie, Passi, Batteria, Frequenza Cardiaca, ecc.) nei 3 archi curvi personalizzabili.',
+    gal_title: 'Screenshot (Wear OS)', priv_title: 'Informativa sulla Privacy', priv_app: 'App:',
+    priv_body: 'Weather Land è un quadrante Wear OS creato con Watch Face Format v2 (senza codice eseguibile). Non raccoglie, memorizza né condivide alcun dato personale o posizione.',
+    priv_contact: 'Contatti',
+    monsS: ['GEN','FEB','MAR','APR','MAG','GIU','LUG','AGO','SET','OTT','NOV','DIC'],
+    monsF: ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre']
+  },
+  fr: {
+    nav_sim: 'Simulateur', nav_feat: 'Fonctionnalités', nav_gal: 'Galerie', nav_priv: 'Confidentialité', nav_policy: 'Confidentialité', nav_beta: '🚀 Tester la Bêta',
+    hero_desc: 'Cadran météo AMOLED photoréaliste en direct pour Wear OS 5+. Météo native du système avec soleil scintillant, 8 phases lunaires réelles, nuages jour/nuit, orages, pluie sur le verre, neige et brouillard.',
+    beta_title: '🧪 Enviez-vous de l\'essayer gratuitement sur votre montre Wear OS ?',
+    beta_desc: 'Rejoignez le test fermé en 2 étapes avec le même compte Google que votre montre : rejoignez d\'abord le groupe de testeurs puis activez le téléchargement sur Google Play.',
+    beta_step1: '👥 1. Rejoindre le Groupe (watchfaces-wearos)', beta_step2: '📲 2. S\'inscrire et Télécharger sur Play Store',
+    lbl_time: 'Heure :', lbl_font: 'Police :', lbl_size: 'Taille :', lbl_date: 'Date :', lbl_batt: 'Barre (3h–9h)', lbl_c1: 'Complication 1', lbl_c2: 'Complication 2', lbl_temp: 'Temp', lbl_fog: 'Buée',
+    feat_title: 'Fonctionnalités principales',
+    f1_t: '☀️ Météo native + 8 Phases Lunaires', f1_d: 'Alimenté par la météo native de Wear OS 5+ sans clé API. Nuages jour/nuit, prisme arc-en-ciel sous bruine et les 8 phases lunaires réelles.',
+    f2_t: '🖤 Noir Pur AMOLED + AOD', f2_d: 'Conçu sur #000000 pour économiser la batterie OLED. En mode AOD, les animations s\'éteignent pour n\'afficher que vos données actives.',
+    f3_t: '🔤 Polices Pixel, Nothing et Tailles', f3_d: 'Personnalisez l\'heure avec 4 polices (Pixel, Nothing Points, Sport, Classique), 3 tailles jusqu\'à 1.75x et plusieurs formats d\'heure et date.',
+    f4_t: '⚙️ 3 Complications sur la Lunette', f4_d: 'Choisissez vos widgets favoris (Calories, Pas, Batterie, Fréquence cardiaque, etc.) sur les 3 arcs courbés personnalisables.',
+    gal_title: 'Captures d\'écran (Wear OS)', priv_title: 'Politique de Confidentialité', priv_app: 'App :',
+    priv_body: 'Weather Land est un cadran Wear OS conçu avec Watch Face Format v2 (sans code exécutable). Il ne collecte, ne stocke ni ne partage aucune donnée personnelle ni position.',
+    priv_contact: 'Contact',
+    monsS: ['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'],
+    monsF: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre']
+  }
+};
+
+let currentLang = 'es';
+const langSelect = document.getElementById('langSelect');
+
+function applyLang(lang) {
+  currentLang = I18N[lang] ? lang : 'en';
+  langSelect.value = currentLang;
+  document.documentElement.lang = currentLang;
+  const dict = I18N[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+}
+
+const navLang = (navigator.language || 'en').slice(0, 2).toLowerCase();
+applyLang(I18N[navLang] ? navLang : 'en');
+langSelect.addEventListener('change', e => applyLang(e.target.value));
+
 const BASE = 'app/src/main/res/drawable/';
-const CACHE_VER = 'v5';
+const CACHE_VER = 'v6';
 const FILES = [
   'sol',
   'moon_new', 'moon_waxing_crescent', 'moon_first_quarter', 'moon_waxing_gibbous',
@@ -325,30 +448,27 @@ for (const name of FILES) {
 }
 
 const MODES = [
-  { id: 'sunny',                label: '☀️ Soleado',                temp: 28 },
-  { id: 'partly_day',           label: '⛅ Seminublado Día',         temp: 24 },
-  { id: 'partly_night',         label: '☁️🌙 Seminublado Noche',     temp: 13 },
-  { id: 'cloudy_day',           label: '☁️ Muy Nublado Día',        temp: 19 },
-  { id: 'cloudy_night',         label: '☁️🌙 Muy Nublado Noche',     temp: 12 },
-  { id: 'drizzle_day',          label: '🌦️🌈 Llovizna Día (Prisma)', temp: 20 },
-  { id: 'drizzle_night',        label: '🌧️🌙 Llovizna Noche',       temp: 14 },
-  { id: 'rain_day',             label: '🌧️ Lluvia Día',             temp: 17 },
-  { id: 'rain_night',           label: '🌧️🌙 Lluvia Noche',         temp: 13 },
-  { id: 'storm',                label: '⛈️ Tormenta + Rayos',        temp: 15 },
-  { id: 'snow_day',             label: '❄️ Nieve Día',              temp: 0  },
-  { id: 'snow_night',           label: '❄️🌙 Nieve Noche',          temp: -3 },
-  { id: 'sleet_day',            label: '🌨️ Aguanieve',              temp: 1  },
-  { id: 'fog_day',              label: '🌫️ Niebla Día',             temp: 13 },
-  { id: 'fog_night',            label: '🌫️🌙 Niebla Noche',         temp: 10 },
-  { id: 'wind_day',             label: '💨 Ventoso Día',            temp: 21 },
-  { id: 'moon_new',             label: '🌑 1. Luna Nueva',          temp: 12 },
-  { id: 'moon_waxing_crescent', label: '🌒 2. Creciente',           temp: 13 },
-  { id: 'moon_first_quarter',   label: '🌓 3. Cuarto Creciente',    temp: 13 },
-  { id: 'moon_waxing_gibbous',  label: '🌔 4. Gibosa Creciente',    temp: 14 },
-  { id: 'moon_full',            label: '🌕 5. Luna Llena',          temp: 14 },
-  { id: 'moon_waning_gibbous',  label: '🌖 6. Gibosa Menguante',    temp: 13 },
-  { id: 'moon_last_quarter',    label: '🌗 7. Cuarto Menguante',    temp: 12 },
-  { id: 'moon_waning_crescent', label: '🌘 8. Luna Menguante',      temp: 12 }
+  { id: 'sunny',                label: '☀️ Sunny',        temp: 28 },
+  { id: 'partly_day',           label: '⛅ Partly Day',   temp: 24 },
+  { id: 'partly_night',         label: '☁️🌙 Partly Night', temp: 13 },
+  { id: 'cloudy_day',           label: '☁️ Cloudy Day',   temp: 19 },
+  { id: 'cloudy_night',         label: '☁️🌙 Cloudy Night', temp: 12 },
+  { id: 'drizzle_day',          label: '🌦️🌈 Drizzle Prism', temp: 20 },
+  { id: 'rain_day',             label: '🌧️ Rain Day',     temp: 17 },
+  { id: 'rain_night',           label: '🌧️🌙 Rain Night', temp: 13 },
+  { id: 'storm',                label: '⛈️ Storm',        temp: 15 },
+  { id: 'snow_day',             label: '❄️ Snow Day',     temp: 0  },
+  { id: 'sleet_day',            label: '🌨️ Sleet',        temp: 1  },
+  { id: 'fog_day',              label: '🌫️ Fog Day',      temp: 13 },
+  { id: 'fog_night',            label: '🌫️🌙 Fog Night',  temp: 10 },
+  { id: 'moon_new',             label: '🌑 New Moon',     temp: 12 },
+  { id: 'moon_waxing_crescent', label: '🌒 Waxing Cr.',   temp: 13 },
+  { id: 'moon_first_quarter',   label: '🌓 First Qtr.',   temp: 13 },
+  { id: 'moon_waxing_gibbous',  label: '🌔 Waxing Gib.',  temp: 14 },
+  { id: 'moon_full',            label: '🌕 Full Moon',    temp: 14 },
+  { id: 'moon_waning_gibbous',  label: '🌖 Waning Gib.',  temp: 13 },
+  { id: 'moon_last_quarter',    label: '🌗 Last Qtr.',    temp: 12 },
+  { id: 'moon_waning_crescent', label: '🌘 Waning Cr.',   temp: 12 }
 ];
 
 let mode = 'sunny';
@@ -437,13 +557,13 @@ function render(nowMs) {
   const showFog   = document.getElementById('tFog').checked;
   const isAod     = document.getElementById('tAod').checked;
   const curMode   = MODES.find(m => m.id === mode);
+  const dict      = I18N[currentLang];
 
   ctx.clearRect(0, 0, 450, 450);
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, 450, 450);
 
   if (!isAod) {
-    // 1. ASTROS
     if (mode === 'sunny' || mode === 'partly_day') {
       drawImg('fx_sun_corona',    -35, -100, 520, 520, (150 + 50 * Math.sin(nowMs / 1600)) / 255, (nowMs / 260) % 360);
       drawImg('fx_sun_shimmer_a',  -5,  -70, 460, 460, (125 + 110 * Math.sin(nowMs / 1100)) / 255, (nowMs / 190) % 360, 1 + 0.06 * Math.sin(nowMs / 1200));
@@ -457,27 +577,15 @@ function render(nowMs) {
     if (mode.startsWith('moon_') || mode === 'partly_night') {
       drawImg('celestial_stars_a', 0, 0, 450, 450, (110 + 115 * Math.sin(nowMs / 1300)) / 255);
       drawImg('celestial_stars_b', 0, 0, 450, 450, (110 + 115 * Math.cos(nowMs / 1700)) / 255);
-      const mImg = mode === 'partly_night' ? 'moon_full' : mode;
-      drawImg(mImg, 85, 10, 280, 280, 1);
+      drawImg(mode === 'partly_night' ? 'moon_full' : mode, 85, 10, 280, 280, 1);
     }
-
-    // 2. RELÁMPAGOS SLIDE-DOWN + FLASH
     if (mode === 'storm') {
       const c = t % 12;
-      const flash = (c < 0.35) || (c > 4.0 && c < 4.40) || (c > 8.2 && c < 8.65);
-      if (flash) drawImg('fx_storm_flash', 0, 0, 450, 450, 180 / 255);
-      if (c < 0.18 || (c > 0.24 && c < 0.42)) {
-        drawImg('lightning_left', 0, clamp(-130 + c * 900, -130, 0), 450, 450, 1);
-      }
-      if ((c >= 4.0 && c < 4.18) || (c > 4.24 && c < 4.45)) {
-        drawImg('lightning_center', 0, clamp(-130 + (c - 4.0) * 900, -130, 0), 450, 450, 1);
-      }
-      if ((c >= 8.2 && c < 8.40) || (c > 8.48 && c < 8.72)) {
-        drawImg('lightning_double', 0, clamp(-130 + (c - 8.2) * 900, -130, 0), 450, 450, 1);
-      }
+      if ((c < 0.35) || (c > 4.0 && c < 4.40) || (c > 8.2 && c < 8.65)) drawImg('fx_storm_flash', 0, 0, 450, 450, 180 / 255);
+      if (c < 0.18 || (c > 0.24 && c < 0.42)) drawImg('lightning_left', 0, clamp(-130 + c * 900, -130, 0), 450, 450, 1);
+      if ((c >= 4.0 && c < 4.18) || (c > 4.24 && c < 4.45)) drawImg('lightning_center', 0, clamp(-130 + (c - 4.0) * 900, -130, 0), 450, 450, 1);
+      if ((c >= 8.2 && c < 8.40) || (c > 8.48 && c < 8.72)) drawImg('lightning_double', 0, clamp(-130 + (c - 8.2) * 900, -130, 0), 450, 450, 1);
     }
-
-    // 3. NUBES DIFERENCIADAS DÍA / NOCHE
     if (mode === 'partly_day') {
       drawImg('cloud_white_1',     -360 + ((t * 14.0) % 1180),          10, 330, 330, 1);
       drawImg('cloud_white_2_sep', -380 + (((t * 14.0) + 590) % 1180), -15, 360, 360, 230 / 255);
@@ -490,7 +598,7 @@ function render(nowMs) {
       drawImg('cloud_white_2_stack', -400 + (((t * 12.5) + 420) % 1050), -15, 380, 380, 235 / 255);
       drawImg('cloud_white_2_sep',   -390 + (((t * 12.5) + 630) % 1050), -30, 370, 370, 220 / 255);
       drawImg('cloud_white_1',       -390 + (((t * 12.5) + 840) % 1050),   5, 370, 370, 240 / 255);
-    } else if (mode === 'cloudy_night' || mode === 'snow_night') {
+    } else if (mode === 'cloudy_night') {
       drawImg('cloud_dark_2_stack', -400 + ((t * 12.5) % 1050),         -35, 380, 380, 1);
       drawImg('cloud_dark_1',       -390 + (((t * 12.5) + 210) % 1050), -45, 370, 370, 225 / 255);
       drawImg('cloud_dark_2_sep',   -400 + (((t * 12.5) + 420) % 1050), -15, 380, 380, 235 / 255);
@@ -500,10 +608,6 @@ function render(nowMs) {
       drawImg('cloud_white_2_sep', -390 + ((t * 13.0) % 1100),         -30, 370, 370, 215 / 255);
       drawImg('cloud_dark_1',      -380 + (((t * 13.0) + 370) % 1100), -40, 360, 360, 190 / 255);
       drawImg('cloud_white_1',     -380 + (((t * 13.0) + 740) % 1100), -15, 360, 360, 225 / 255);
-    } else if (mode === 'drizzle_night') {
-      drawImg('cloud_dark_2_sep',   -390 + ((t * 13.0) % 1100),         -30, 370, 370, 220 / 255);
-      drawImg('cloud_dark_1',       -380 + (((t * 13.0) + 370) % 1100), -40, 360, 360, 1);
-      drawImg('cloud_dark_2_stack', -380 + (((t * 13.0) + 740) % 1100), -15, 360, 360, 225 / 255);
     } else if (mode === 'rain_day') {
       drawImg('cloud_dark_2_stack', -410 + ((t * 13.0) % 1000),         -50, 400, 400, 1);
       drawImg('cloud_white_2_sep',  -395 + (((t * 13.0) + 200) % 1000), -35, 385, 385, 225 / 255);
@@ -530,82 +634,47 @@ function render(nowMs) {
       drawImg('cloud_dark_2_sep',   -390 + ((t * 11.0) % 1100),         -30, 370, 370, 205 / 255);
       drawImg('cloud_dark_1',       -370 + (((t * 11.0) + 370) % 1100), -10, 350, 350, 210 / 255);
       drawImg('cloud_dark_2_stack', -390 + (((t * 11.0) + 740) % 1100), -20, 370, 370, 195 / 255);
-    } else if (mode === 'wind_day') {
-      drawImg('cloud_white_1',     -380 + ((t * 28.0) % 1100),         -20, 360, 360, 1);
-      drawImg('cloud_white_2_sep', -390 + (((t * 28.0) + 550) % 1100),   0, 370, 370, 220 / 255);
     }
-
-    // 4. NIEVE LEJANA / NIEBLA DESCENDENTE / VIENTO
-    if (mode === 'snow_day' || mode === 'snow_night' || mode === 'sleet_day') {
+    if (mode === 'snow_day' || mode === 'sleet_day') {
       drawImg('fx_snow_slow', 14 * Math.sin(nowMs / 1700), -450 + ((t * 38) % 450), 450, 900, 1);
     }
     if (mode === 'fog_day' || mode === 'fog_night') {
       drawImg('fx_fog_descend', 18 * Math.sin(nowMs / 2600), -450 + ((t * 34) % 450), 450, 900, (185 + 45 * Math.sin(nowMs / 2800)) / 255);
     }
-    if (mode === 'wind_day') {
-      drawImg('fx_wind_streaks', -60 + ((t * 65) % 60), 70, 570, 190, 0.85);
-    }
   }
 
-  // 5. HUD + BISEL (ACTIVO Y ATENUADO EN AOD)
   const now = new Date();
-  const h24 = now.getHours();
-  const m   = now.getMinutes();
-  const h12 = (h24 % 12) || 12;
-  const hh24 = String(h24).padStart(2, '0');
-  const hh12 = String(h12).padStart(2, '0');
-  const mm   = String(m).padStart(2, '0');
+  const h24 = now.getHours(), m = now.getMinutes(), h12 = (h24 % 12) || 12;
+  const hh24 = String(h24).padStart(2, '0'), hh12 = String(h12).padStart(2, '0'), mm = String(m).padStart(2, '0');
   const ampm = h24 >= 12 ? 'PM' : 'AM';
-  const dd   = String(now.getDate()).padStart(2, '0');
-  const moZ  = String(now.getMonth() + 1).padStart(2, '0');
-  const yyyy = now.getFullYear();
-  const yy   = String(yyyy).slice(-2);
-  const monsS = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-  const monsF = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const dd = String(now.getDate()).padStart(2, '0'), moZ = String(now.getMonth() + 1).padStart(2, '0');
+  const yyyy = now.getFullYear(), yy = String(yyyy).slice(-2);
 
-  // 5A. Barra de batería curva por el bisel inferior (9h = 265° -> 6h = 180° -> 3h = 95°, izquierda a derecha)
   if (showBatt) {
-    const startRad   = (265 - 90) * Math.PI / 180;
+    const startRad = (265 - 90) * Math.PI / 180;
     const endFullRad = (95 - 90) * Math.PI / 180;
-    const endValRad  = ((265 - battPct * 1.7) - 90) * Math.PI / 180;
+    const endValRad = ((265 - battPct * 1.7) - 90) * Math.PI / 180;
     ctx.save();
     ctx.globalAlpha = isAod ? 0.53 : 1;
-    ctx.lineWidth = 6;
-    ctx.lineCap = 'round';
+    ctx.lineWidth = 6; ctx.lineCap = 'round';
     ctx.strokeStyle = 'rgba(255,255,255,0.26)';
-    ctx.beginPath();
-    ctx.arc(225, 225, 217, startRad, endFullRad, true);
-    ctx.stroke();
-
+    ctx.beginPath(); ctx.arc(225, 225, 217, startRad, endFullRad, true); ctx.stroke();
     ctx.strokeStyle = '#4ade80';
-    ctx.beginPath();
-    ctx.arc(225, 225, 217, startRad, endValRad, true);
-    ctx.stroke();
+    ctx.beginPath(); ctx.arc(225, 225, 217, startRad, endValRad, true); ctx.stroke();
     ctx.restore();
   }
-
-  // 5B. Calorías (9h–12h, centrado en -45° = 315°) y Pasos (12h–3h, centrado en +45°)
-  if (showCal) {
-    drawCurvedText('🔥 342 kcal', 193, -45, 'bold 16px Segoe UI, sans-serif', isAod ? 0.58 : 1);
-  }
-  if (showSteps) {
-    drawCurvedText('👟 6,840', 193, 45, 'bold 16px Segoe UI, sans-serif', isAod ? 0.58 : 1);
-  }
+  if (showCal)   drawCurvedText('342 kcal', 193, -45, 'bold 16px Segoe UI, sans-serif', isAod ? 0.58 : 1);
+  if (showSteps) drawCurvedText('6,840',    193,  45, 'bold 16px Segoe UI, sans-serif', isAod ? 0.58 : 1);
 
   ctx.save();
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  // 5C. Hora configurable (Tamaño x Fuente x Formato, creciendo hacia arriba desde y=337)
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   if (timeStyle !== 'hidden') {
     const sx = timeSize === 'xl' ? 1.26 : (timeSize === 'large' ? 1.14 : 1.0);
     const sy = timeSize === 'xl' ? 1.75 : (timeSize === 'large' ? 1.35 : 1.0);
     ctx.save();
     ctx.globalAlpha = isAod ? 0.76 : 1;
     ctx.fillStyle = '#ffffff';
-    ctx.translate(225, 337);
-    ctx.scale(sx, sy);
-    ctx.translate(-225, -337);
+    ctx.translate(225, 337); ctx.scale(sx, sy); ctx.translate(-225, -337);
     if (timeStyle === 'h24') {
       ctx.font = `800 82px '${timeFont}', Segoe UI, sans-serif`;
       ctx.fillText(`${hh24}:${mm}`, 225, 294);
@@ -619,9 +688,8 @@ function render(nowMs) {
       ctx.fillStyle = 'rgba(255,255,255,0.88)';
       ctx.fillText(ampm, 342, 304);
     } else if (timeStyle === 'text_es') {
-      const txt = formatTimeWordsEs(h24, m);
       ctx.font = `800 36px '${timeFont}', Segoe UI, sans-serif`;
-      ctx.fillText(txt, 225, 294);
+      ctx.fillText(formatTimeWordsEs(h24, m), 225, 294);
     }
     ctx.restore();
   }
@@ -630,25 +698,15 @@ function render(nowMs) {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(72, 348, 306, 2);
 
-  // 5D. Fecha configurable
   if (dateStyle !== 'hidden') {
     ctx.globalAlpha = isAod ? 0.65 : 1;
     ctx.fillStyle = '#ffffff';
     let dStr = '';
-    if (dateStyle === 'short') {
-      dStr = `${dd}/${moZ}/${yyyy}`;
-      ctx.font = 'bold 22px Segoe UI, sans-serif';
-    } else if (dateStyle === 'medium') {
-      dStr = `${dd}-${monsS[now.getMonth()]}-${yy}`;
-      ctx.font = 'bold 22px Segoe UI, sans-serif';
-    } else if (dateStyle === 'long') {
-      dStr = `${now.getDate()} ${monsF[now.getMonth()]} ${yyyy}`;
-      ctx.font = 'bold 18px Segoe UI, sans-serif';
-    }
+    if (dateStyle === 'short') { dStr = `${dd}/${moZ}/${yyyy}`; ctx.font = 'bold 22px Segoe UI, sans-serif'; }
+    else if (dateStyle === 'medium') { dStr = `${dd}-${dict.monsS[now.getMonth()]}-${yy}`; ctx.font = 'bold 22px Segoe UI, sans-serif'; }
+    else if (dateStyle === 'long') { dStr = `${now.getDate()} ${dict.monsF[now.getMonth()]} ${yyyy}`; ctx.font = 'bold 18px Segoe UI, sans-serif'; }
     ctx.fillText(dStr, 176, 378);
   }
-
-  // 5E. Temperatura
   if (showTemp) {
     ctx.globalAlpha = isAod ? 0.43 : 0.68;
     ctx.fillRect(296, 354, 2, 42);
@@ -659,26 +717,19 @@ function render(nowMs) {
   }
   ctx.restore();
 
-  // 6. SOBRE EL CRISTAL
   if (!isAod) {
     if (mode === 'rain_day' || mode === 'rain_night' || mode === 'storm') {
       drawImg('fx_rain_slow', 0, -450 + ((t * 260) % 450), 450, 900, 1);
       drawImg('fx_rain_fast', 0, -450 + ((t * 440) % 450), 450, 900, 1);
       drawImg('fx_glass_drops_slide', 0, -450 + ((t * 22) % 450), 450, 900, 0.92);
-      if (showFog) {
-        drawImg('fx_glass_fog', 0, 0, 450, 450, (75 + 75 * Math.sin(nowMs / 3500)) / 255);
-      }
+      if (showFog) drawImg('fx_glass_fog', 0, 0, 450, 450, (75 + 75 * Math.sin(nowMs / 3500)) / 255);
     }
-    if (mode === 'drizzle_day' || mode === 'drizzle_night') {
+    if (mode === 'drizzle_day') {
       drawImg('fx_rain_slow', 0, -450 + ((t * 230) % 450), 450, 900, 185 / 255);
       drawImg('fx_glass_drops_slide', 0, -450 + ((t * 16) % 450), 450, 900, 160 / 255);
-      if (mode === 'drizzle_day') {
-        drawImg('fx_rainbow_prism', 0, 0, 450, 450, (110 + 75 * Math.sin(nowMs / 2600)) / 255, 4 * Math.sin(nowMs / 3800));
-      }
+      drawImg('fx_rainbow_prism', 0, 0, 450, 450, (110 + 75 * Math.sin(nowMs / 2600)) / 255, 4 * Math.sin(nowMs / 3800));
     }
-    if (mode === 'snow_day' || mode === 'snow_night') {
-      drawImg('fx_snow_fast', -16 * Math.sin(nowMs / 1300), -450 + ((t * 72) % 450), 450, 900, 1);
-    }
+    if (mode === 'snow_day') drawImg('fx_snow_fast', -16 * Math.sin(nowMs / 1300), -450 + ((t * 72) % 450), 450, 900, 1);
     if (mode === 'sleet_day') {
       drawImg('fx_rain_slow', 0, -450 + ((t * 260) % 450), 450, 900, 170 / 255);
       drawImg('fx_snow_fast', -16 * Math.sin(nowMs / 1300), -450 + ((t * 72) % 450), 450, 900, 1);
@@ -686,12 +737,9 @@ function render(nowMs) {
     if (mode === 'fog_day' || mode === 'fog_night') {
       drawImg('fx_fog_low_fast',   -450 + ((t * 80) % 450),  195, 900, 260, (185 + 45 * Math.sin(nowMs / 2100)) / 255);
       drawImg('fx_fog_low_fast_b', -450 + ((t * 125) % 450), 235, 900, 220, (195 + 50 * Math.cos(nowMs / 1700)) / 255);
-      if (showFog) {
-        drawImg('fx_glass_fog', 0, 0, 450, 450, (60 + 55 * Math.sin(nowMs / 3200)) / 255);
-      }
+      if (showFog) drawImg('fx_glass_fog', 0, 0, 450, 450, (60 + 55 * Math.sin(nowMs / 3200)) / 255);
     }
   }
-
   requestAnimationFrame(render);
 }
 requestAnimationFrame(render);

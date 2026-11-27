@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Weather Land</string>
+
+    <!-- Formato, fonte e tamanho da hora -->
+    <string name="config_time_style">Formato da Hora</string>
+    <string name="config_time_24h">24h (14:00)</string>
+    <string name="config_time_12h_short">12h curta (02:00)</string>
+    <string name="config_time_12h_ampm">12h longa (02:00 PM)</string>
+    <string name="config_time_text">Por extenso (Meio-dia)</string>
+    <string name="config_hidden">Oculto</string>
+
+    <string name="config_time_font">Fonte da Hora</string>
+    <string name="config_font_modern">Pixel (Moderna)</string>
+    <string name="config_font_digital">Nothing (Pontos)</string>
+    <string name="config_font_sport">Esportiva (Condensada)</string>
+    <string name="config_font_classic">Clássica (Serifa)</string>
+
+    <string name="config_time_size">Tamanho da Hora</string>
+    <string name="config_size_normal">Normal (1x)</string>
+    <string name="config_size_large">Grande (1.35x)</string>
+    <string name="config_size_xl">Gigante (1.75x)</string>
+
+    <!-- Formato da data -->
+    <string name="config_date_style">Formato da Data</string>
+    <string name="config_date_short">Curta (12/12/2026)</string>
+    <string name="config_date_medium">Média (12-DEZ-26)</string>
+    <string name="config_date_long">Longa (12 Dezembro 2026)</string>
+
+    <!-- Opções -->
+    <string name="config_show_temperature">Mostrar Temperatura</string>
+    <string name="config_show_glass_fog">Efeito Vidro Embaçado</string>
+
+    <!-- 3 Complicações personalizáveis -->
+    <string name="complication_top_left">Arco Superior Esquerdo (9h–12h)</string>
+    <string name="complication_top_right">Arco Superior Direito (12h–3h)</string>
+    <string name="complication_bottom_bar">Barra Inferior (3h–9h)</string>
+</resources>

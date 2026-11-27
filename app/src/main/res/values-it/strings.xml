@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Weather Land</string>
+
+    <!-- Formato, carattere e dimensione ora -->
+    <string name="config_time_style">Formato Ora</string>
+    <string name="config_time_24h">24h (14:00)</string>
+    <string name="config_time_12h_short">12h breve (02:00)</string>
+    <string name="config_time_12h_ampm">12h lungo (02:00 PM)</string>
+    <string name="config_time_text">In lettere (Mezzogiorno)</string>
+    <string name="config_hidden">Nascosto</string>
+
+    <string name="config_time_font">Carattere Ora</string>
+    <string name="config_font_modern">Pixel (Moderno)</string>
+    <string name="config_font_digital">Nothing (Punti)</string>
+    <string name="config_font_sport">Sportivo (Condensato)</string>
+    <string name="config_font_classic">Classico (Serif)</string>
+
+    <string name="config_time_size">Dimensione Ora</string>
+    <string name="config_size_normal">Normale (1x)</string>
+    <string name="config_size_large">Grande (1.35x)</string>
+    <string name="config_size_xl">Gigante (1.75x)</string>
+
+    <!-- Formato data -->
+    <string name="config_date_style">Formato Data</string>
+    <string name="config_date_short">Breve (12/12/2026)</string>
+    <string name="config_date_medium">Medio (12-DIC-26)</string>
+    <string name="config_date_long">Lungo (12 Dicembre 2026)</string>
+
+    <!-- Interruttori -->
+    <string name="config_show_temperature">Mostra Temperatura</string>
+    <string name="config_show_glass_fog">Effetto Vetro Appannato</string>
+
+    <!-- 3 Complicazioni sulla ghiera -->
+    <string name="complication_top_left">Arco Superiore Sinistro (9–12)</string>
+    <string name="complication_top_right">Arco Superiore Destro (12–3)</string>
+    <string name="complication_bottom_bar">Barra Inferiore (3–9)</string>
+</resources>

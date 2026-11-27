@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watch_face_name">Weather Land</string>
+
+    <!-- Format, czcionka i rozmiar godziny -->
+    <string name="config_time_style">Format godziny</string>
+    <string name="config_time_24h">24h (14:00)</string>
+    <string name="config_time_12h_short">12h krótki (02:00)</string>
+    <string name="config_time_12h_ampm">12h długi (02:00 PM)</string>
+    <string name="config_time_text">Słownie (Południe / kwadrans)</string>
+    <string name="config_hidden">Ukryty</string>
+
+    <string name="config_time_font">Czcionka godziny</string>
+    <string name="config_font_modern">Pixel (Nowoczesna)</string>
+    <string name="config_font_digital">Nothing (Kropki)</string>
+    <string name="config_font_sport">Sportowa (Wąska)</string>
+    <string name="config_font_classic">Klasyczna (Szeryfowa)</string>
+
+    <string name="config_time_size">Rozmiar godziny</string>
+    <string name="config_size_normal">Normalny (1x)</string>
+    <string name="config_size_large">Duży (1.35x)</string>
+    <string name="config_size_xl">Gigantyczny (1.75x)</string>
+
+    <!-- Format daty -->
+    <string name="config_date_style">Format daty</string>
+    <string name="config_date_short">Krótki (12/12/2026)</string>
+    <string name="config_date_medium">Średni (12-GRU-26)</string>
+    <string name="config_date_long">Długi (12 Grudnia 2026)</string>
+
+    <!-- Przełączniki -->
+    <string name="config_show_temperature">Pokaż temperaturę</string>
+    <string name="config_show_glass_fog">Efekt zaparowanego szkła</string>
+
+    <!-- 3 Komplikacje na pierścieniu -->
+    <string name="complication_top_left">Górny lewy łuk (9–12)</string>
+    <string name="complication_top_right">Górny prawy łuk (12–3)</string>
+    <string name="complication_bottom_bar">Dolny pasek (3–9)</string>
+</resources>
